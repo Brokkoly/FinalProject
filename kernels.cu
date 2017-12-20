@@ -8,7 +8,7 @@
 
 //LSTM Kernels
 
-
+typedef float (*op_func_t) (float); 
 //Initial: ft = sigmoid(W_f*concatenate(h_t-1,x_t]+bf))
 __device__ float sigmoid(float x){
     float retVal = 0;
@@ -42,7 +42,7 @@ __global__ void backPropagationSecondKernelPart1(float* hiddenLayer,float* gamma
     int windex = tindex+blockIdx.x*blockDim.x;
     //int sindex = tindex+blockIdx.y*gridDim.x*blockDim.x;
     //float gamma = 0;
-    gammas[gindex] = dels[oindex]*weights[windex]*hiddenLayer[tindex]*(1-hiddenLayer[tindex]);
+    gammas[windex] = dels[oindex]*weights[windex]*hiddenLayer[tindex]*(1-hiddenLayer[tindex]);
     //float del = (outputLayer[oindex]-outputLayerTrue[oindex])*outputLayer[oindex]*(1-outputLayer[oindex]);
     //deltas[windex] = (1-alpha)*lrate*del*inputLayer[tindex]+alpha*deltas[windex];
     //weights[windex] = weights[windex]-deltas[windex];
