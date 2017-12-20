@@ -12,8 +12,8 @@ typedef float (*op_func_t) (float);
 //Initial: ft = sigmoid(W_f*concatenate(h_t-1,x_t]+bf))
 __device__ float sigmoid(float x){
     float retVal = 0;
-    retval = 1+exp(x);
-    retval = 1/retval;
+    retVal = 1+exp(x);
+    retVal = 1/retVal;
     return retVal;
 }
 __device__ float sigmoidDerivative(float x){
