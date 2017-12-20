@@ -17,7 +17,7 @@ __device__ float sigmoid(float x){
     return retval;
 }
 __device__ float sigmoidDerivative(float x){
-    float val = sigmiod(x);
+    float val = sigmoid(x);
     return val*(1-val);
 }
 
