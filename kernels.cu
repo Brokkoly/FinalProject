@@ -88,6 +88,7 @@ __global__ void matrixReductionDestructive(float *g_data,int size,int biggerSize
             sdata[tindex]+=sdata[tindex+s+1];
         }
         __syncthreads();
+        if(s == 0) break;
     }
     if(tindex==0) g_data[blockIdx.x] = sdata[0];
 }
