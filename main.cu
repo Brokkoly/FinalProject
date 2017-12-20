@@ -12,8 +12,8 @@ int main(int argc,char** argv){
     //get inputs from test file
 
     //todo: add main
-    float* a = malloc(2*13*sizeof(float));
-    float* b = malloc(2);
+    float* a = (float*) malloc(2*13*sizeof(float));
+    float* b = (float*) malloc(2);
     for(int i = 0; i < 13;i++){
         a[i] = i;
         b[0] +=i;
@@ -29,7 +29,9 @@ int main(int argc,char** argv){
     cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
 
     printf("Device Results: %f,%f\nHost Results: %f,%f\n",a[0],a[13],b[0],b[1]);
-
+    cudaFree(da);
+    free(a);
+    free(b);
 
 
 
