@@ -1,5 +1,3 @@
-
-
 #ifndef KERNELS_CU
 #define KERNELS_CU
 #include <math.h>
@@ -75,14 +73,16 @@ __global__ void sigmoidKernel(float* y){
     y[threadIdx.x] = sigmoid(y[threadIdx.x]);
 }
 
-__global__ void matrixReductionDestructive(float *g_data)
+__global__ void matrixReductionDestructive(float *g_data,int size)
 {
     extern __shared__ float sdata[];
     unsigned int tindex = (threadIdx.x);
     unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
     sdata[tindex] = g_data[i];
     __syncthreads();
-    for(unsigned int s = blockDim.x/2;s>=0;s>>=1){
+    //int temp = blockDim.x/2;
+
+    for(unsigned int s = size/2;s>=0;s>>=1){
         //int index = 2*s*tindex;
         if((tindex<(s+1))&&((tindex+s+1)<blockDim.x)){
             sdata[tindex]+=sdata[tindex+s+1];
@@ -91,14 +91,15 @@ __global__ void matrixReductionDestructive(float *g_data)
     }
     if(tindex==0) g_data[blockIdx.x] = sdata[0];
 }
-__global__ void matrixReduction(float *g_data,float* o_data)
+__global__ void matrixReduction(float *g_data,float* o_data,int size)
 {
     extern __shared__ float sdata[];
     unsigned int tindex = (threadIdx.x);
     unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
     sdata[tindex] = g_data[i];
     __syncthreads();
-    for(unsigned int s = blockDim.x/2;s>=0;s>>=1){
+
+    for(unsigned int s = size/2;s>=0;s>>=1){
         //int index = 2*s*tindex;
         if((tindex<(s+1))&&((tindex+s+1)<blockDim.x)){
             sdata[tindex]+=sdata[tindex+s+1];
