@@ -73,11 +73,11 @@ __global__ void sigmoidKernel(float* y){
     y[threadIdx.x] = sigmoid(y[threadIdx.x]);
 }
 
-__global__ void matrixReductionDestructive(float *g_data,int size)
+__global__ void matrixReductionDestructive(float *g_data,int size,int biggerSize)
 {
     extern __shared__ float sdata[];
     unsigned int tindex = (threadIdx.x);
-    unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
+    unsigned int i = blockIdx.x*size+threadIdx.x;
     sdata[tindex] = g_data[i];
     __syncthreads();
     //int temp = blockDim.x/2;
@@ -91,11 +91,11 @@ __global__ void matrixReductionDestructive(float *g_data,int size)
     }
     if(tindex==0) g_data[blockIdx.x] = sdata[0];
 }
-__global__ void matrixReduction(float *g_data,float* o_data,int size)
+__global__ void matrixReduction(float *g_data,float* o_data,int size,int biggerSize)
 {
     extern __shared__ float sdata[];
     unsigned int tindex = (threadIdx.x);
-    unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
+    unsigned int i = blockIdx.x*size+threadIdx.x;
     sdata[tindex] = g_data[i];
     __syncthreads();
 

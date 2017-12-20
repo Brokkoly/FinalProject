@@ -26,7 +26,7 @@ int main(int argc,char** argv){
     float* da;
     cudaMalloc((void**)&da,sizeof(float)*26);
     cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
-    matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,16);
+    matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,13,16);
     cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
 
     printf("Device Results: %f,%f\nHost Results: %f,%f\n",a[0],a[13],b[0],b[1]);
@@ -42,14 +42,14 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
 
     //firstLayer
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights[0],dinterSize);
-    matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh);
+    matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,1024);
     sigmoidKernel<<<1,numH>>>(dh);
 
     //first layer done
 
     //second layer:
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights[1],dinterSize);
-    matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy);
+    matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,1024);
     sigmoidKernel<<<1,numY>>>(dy);
 
     //second layer done
