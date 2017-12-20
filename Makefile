@@ -26,7 +26,7 @@ all : finalProject
 
 
 finalProject: main.cu 
-	module load cuda;nvcc -o finalProject $(OPT) main.cu kernels.cu -ccbin $(BIN)
+	module load cuda;nvcc -o finalProject $(OPT) main.cu -ccbin $(BIN)
 
 
 
