@@ -105,8 +105,10 @@ __global__ void matrixReduction(float *g_data,float* o_data,int size,int biggerS
             sdata[tindex]+=sdata[tindex+s+1];
         }
         __syncthreads();
+        if(s == 0) break;
     }
     if(tindex==0) o_data[blockIdx.x] = sdata[0];
+
 }
 
 #endif
