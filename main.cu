@@ -41,7 +41,7 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights[1],ddeltas,ddels,alpha,lrate);
     //dim3 grid(numY,numH);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights[1],ddels,alpha,lrate);
-    matrixReduction<<<numH,numY,numY*sizeof(float)>>(dgammas,dgammas);
+    matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas);
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights[0],ddeltas,alpha,lrate)
 
 
