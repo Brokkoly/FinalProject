@@ -33,13 +33,14 @@ int main(int argc,char** argv){
     b[1]+=100;
     float* da;
     printf("hibit: %x\n",hibit(13));
-    cudaMalloc((void**)&da,sizeof(float)*26);
-    cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
-    matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,13,hibit(13)<<1);
-    cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
+    //cudaMalloc((void**)&da,sizeof(float)*26);
+    //cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
+    //matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,13,hibit(13)<<1);
+    //cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
 
-    printf("Device Results: %f,%f\nHost Results: %f,%f\n",a[0],a[13],b[0],b[1]);
-    cudaFree(da);
+    //printf("Device Results: %f,%f\n",a[0],a[13]);
+    printf("Host Results: %f,%f\n",b[0],b[1]);
+    //cudaFree(da);
     free(a);
     free(b);
 }
