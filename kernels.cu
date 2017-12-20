@@ -1,6 +1,7 @@
 
 
-
+#ifndef KERNELS_CU
+#define KERNELS_CU
 #include <math.h>
 
 
@@ -55,11 +56,12 @@ __global__ void backPropagationSecondKernelPart15(float* gammas,int kSize){
     }
 }*/
 
-__global__ void backPropagationSecondKernelPart2(float* inputLayer,float* gammas,float* weights,float* deltas,float* alpha,float lrate){
+__global__ void backPropagationSecondKernelPart2(float* inputLayer,float* gammas,float* weights,float* deltas,float alpha,float lrate){
     int tindex = threadIDx.x;//For each upper node
     int oindex = blockIDx.x;//for each hidden node
     int windex = tindex+blockIDx.x*blockDim.x;//
-    deltas[windex] = (1-alpha)*lrate*gammas[oindex]*inputLayer[tindex]+alpha*deltas[windex];
+    int gindex = blockIDx.x*gridDim.x;
+    deltas[windex] = (1-alpha)*lrate*gammas[gindex]*inputLayer[tindex]+alpha*deltas[windex];
     weights[windex] = weights[windex]-deltas[windex];
 }
 __global__ void forwardPropagation(float* x,float*Y,float* W,int yWidth){
@@ -73,22 +75,6 @@ __global__ void sigmoidKernel(float* y){
     y[threadIDx.x] = sigmoid(y[threadIDx.x]);
 }
 
-__global__ void matrixReduction(float *g_data,float *out_data)
-{
-    extern __shared__ float sdata[];
-    unsigned int tindex = (threadIdx.x);
-    unsigned int i = blockIdx.x*blockDim.x+threadIdx.x;
-    sdata[tindex] = g_data[i];
-    __syncthreads();
-    for(unsigned int s = blockDim.x/2;s>0;s>>=1){
-        //int index = 2*s*tindex;
-        if(tindex<s){
-            sdata[tindex]+=sdata[tindex+s];
-        }
-        __syncthreads();
-    }
-    if(tindex==0) out_data[blockIdx.x] = sdata[0];
-}
 __global__ void matrixReductionDestructive(float *g_data)
 {
     extern __shared__ float sdata[];
@@ -122,3 +108,4 @@ __global__ void matrixReduction(float *g_data,float* o_data)
     if(tindex==0) o_data[blockIdx.x] = sdata[0];
 }
 
+#endif

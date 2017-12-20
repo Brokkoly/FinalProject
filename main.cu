@@ -1,5 +1,8 @@
+#ifdef _WIN32
+#  define NOMINMAX 
+#endif
 
-
+#include "kernels.cu"
 
 int main(int argc,char* argv){
 
