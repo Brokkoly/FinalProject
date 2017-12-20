@@ -3,7 +3,8 @@
 #endif
 
 #include "kernels.cu"
-
+#include <stdio.h>
+#include <stdlib.h>
 int main(int argc,char** argv){
 
     //Initialize weight matrices
