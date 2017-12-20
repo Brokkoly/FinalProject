@@ -33,7 +33,7 @@ int main(int argc,char** argv){
     b[1]+=100;
     float* da;
     printf("hibit: %x\n",hibit(13));
-    cudaMalloc((void**)&da,sizeof(float)*26);
+    cudaMalloc(&da,sizeof(float)*26);
     cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
     matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,13,hibit(13)<<1);
     cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
