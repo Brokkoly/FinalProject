@@ -5,6 +5,14 @@
 #include "kernels.cu"
 #include <stdio.h>
 #include <stdlib.h>
+int hibit(unsigned int n) {
+    n |= (n >>  1);
+    n |= (n >>  2);
+    n |= (n >>  4);
+    n |= (n >>  8);
+    n |= (n >> 16);
+    return n - (n >> 1);
+}
 int main(int argc,char** argv){
 
     //Initialize weight matrices
@@ -34,14 +42,7 @@ int main(int argc,char** argv){
     free(a);
     free(b);
 }
-int hibit(unsigned int n) {
-    n |= (n >>  1);
-    n |= (n >>  2);
-    n |= (n >>  4);
-    n |= (n >>  8);
-    n |= (n >> 16);
-    return n - (n >> 1);
-}
+
 
 void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float** dWeights,float** ddeltas,int numX,int numH,int numY,float alpha,float lrate,int dinterSize){
 
