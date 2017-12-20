@@ -22,13 +22,13 @@ __device__ float sigmoidDerivative(float x){
 }
 
 __global__ void applySigmoid(float* hiddenLayer){
-    int index = threadIDx.x;
+    int index = threadIdx.x;
     hiddenLayer[index] = sigmoid(hiddenLayer[index]);
 }
 __global__ void backPropagationFirstKernel(float* inputLayer,float* outputLayer,float* outputLayerTrue,float* weights,float* deltas,float* dels,float alpha,float lrate){
-    int tindex = threadIDx.x;
-    int oindex = blockIDx.x;
-    int windex = tindex+blockIDx.x*blockDim.x;
+    int tindex = threadIdx.x;
+    int oindex = blockIdx.x;
+    int windex = tindex+blockIdx.x*blockDim.x;
     float del = (outputLayer[oindex]-outputLayerTrue[oindex])*outputLayer[oindex]*(1-outputLayer[oindex]);
     deltas[windex] = (1-alpha)*lrate*del*inputLayer[tindex]+alpha*deltas[windex];
     weights[windex] = weights[windex]-deltas[windex];
@@ -36,20 +36,20 @@ __global__ void backPropagationFirstKernel(float* inputLayer,float* outputLayer,
 
 //blocks: (# of output layers,# of hidden layers)
 __global__ void backPropagationSecondKernelPart1(float* hiddenLayer,float* gammas,float* weights,float* dels,float alpha,float lrate){
-    int tindex = threadIDx.x;//For each hidden node
-    int oindex = blockIDx.x;//for each output node
-    //int mindex = blockIDx.y;//for each hidden layer
-    int windex = tindex+blockIDx.x*blockDim.x;
-    //int sindex = tindex+blockIDx.y*gridDim.x*blockDim.x;
+    int tindex = threadIdx.x;//For each hidden node
+    int oindex = blockIdx.x;//for each output node
+    //int mindex = blockIdx.y;//for each hidden layer
+    int windex = tindex+blockIdx.x*blockDim.x;
+    //int sindex = tindex+blockIdx.y*gridDim.x*blockDim.x;
     //float gamma = 0;
-    gammas[gindex] = dels[oindex]*weights[windex]*h[tindex]*(1-h[tindex]);
+    gammas[gindex] = dels[oindex]*weights[windex]*hiddenLayer[tindex]*(1-hiddenLayer[tindex]);
     //float del = (outputLayer[oindex]-outputLayerTrue[oindex])*outputLayer[oindex]*(1-outputLayer[oindex]);
     //deltas[windex] = (1-alpha)*lrate*del*inputLayer[tindex]+alpha*deltas[windex];
     //weights[windex] = weights[windex]-deltas[windex];
 }
 /*
 __global__ void backPropagationSecondKernelPart15(float* gammas,int kSize){
-    int tindex = threadIDx.x;//For each hidden node
+    int tindex = threadIdx.x;//For each hidden node
     int gindex = tindex*blockDim.x;
     for(int i = 1; i < kSize;i++){
         gammas[gindex]+=gammas[gindex+i];
@@ -57,22 +57,22 @@ __global__ void backPropagationSecondKernelPart15(float* gammas,int kSize){
 }*/
 
 __global__ void backPropagationSecondKernelPart2(float* inputLayer,float* gammas,float* weights,float* deltas,float alpha,float lrate){
-    int tindex = threadIDx.x;//For each upper node
-    int oindex = blockIDx.x;//for each hidden node
-    int windex = tindex+blockIDx.x*blockDim.x;//
-    int gindex = blockIDx.x*gridDim.x;
+    int tindex = threadIdx.x;//For each upper node
+    int oindex = blockIdx.x;//for each hidden node
+    int windex = tindex+blockIdx.x*blockDim.x;//
+    int gindex = blockIdx.x*gridDim.x;
     deltas[windex] = (1-alpha)*lrate*gammas[gindex]*inputLayer[tindex]+alpha*deltas[windex];
     weights[windex] = weights[windex]-deltas[windex];
 }
 __global__ void forwardPropagation(float* x,float*Y,float* W,int yWidth){
-    int tindex = threadIDx.x;
-    int yindex = threadIDx.x+blockIDx.x*yWidth;//yWidth different because it has to be an exponent of 2
-    int windex = threadIDx.x+blockIDx.x*blockDim.x;
+    int tindex = threadIdx.x;
+    int yindex = threadIdx.x+blockIdx.x*yWidth;//yWidth different because it has to be an exponent of 2
+    int windex = threadIdx.x+blockIdx.x*blockDim.x;
     Y[yindex] = x[tindex]*W[windex];
     //then perform reduction,then sigmoid
 }
 __global__ void sigmoidKernel(float* y){
-    y[threadIDx.x] = sigmoid(y[threadIDx.x]);
+    y[threadIdx.x] = sigmoid(y[threadIdx.x]);
 }
 
 __global__ void matrixReductionDestructive(float *g_data)
