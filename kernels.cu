@@ -20,11 +20,11 @@ __device__ float sigmoidDerivative(float x){
     float val = sigmoid(x);
     return val*(1-val);
 }
-
+/*
 __global__ void applySigmoid(float* hiddenLayer){
     int index = threadIdx.x;
     hiddenLayer[index] = sigmoid(hiddenLayer[index]);
-}
+}*/
 __global__ void backPropagationFirstKernel(float* inputLayer,float* outputLayer,float* outputLayerTrue,float* weights,float* deltas,float* dels,float alpha,float lrate){
     int tindex = threadIdx.x;
     int oindex = blockIdx.x;
