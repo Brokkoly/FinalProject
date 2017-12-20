@@ -25,7 +25,7 @@ int main(int argc,char** argv){
     float* da;
     cudaMalloc((void**)&da,sizeof(float)*26);
     cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
-    matrixReduction<<<2,13>>>(da,da);
+    matrixReduction<<<2,13,13*sizeof(float)>>>(da,da);
     cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
 
     printf("Device Results: %f,%f\nHost Results: %f,%f\n",a[0],a[13],b[0],b[1]);
