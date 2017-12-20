@@ -12,7 +12,23 @@ int main(int argc,char** argv){
     //get inputs from test file
 
     //todo: add main
+    float* a = malloc(2*13*sizeof(float));
+    float* b = malloc(2);
+    for(int i = 0; i < 13;i++){
+        a[i] = i;
+        b[0] +=i;
+        a[i+13] = i;
+        b[1]+=i;
+    }
+    a[13] +=100;
+    b[1]+=100;
+    float* da;
+    cudaMalloc((void**)&da,sizeof(float)*26);
+    cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
+    matrixReduction<<<2,13>>>(da,da);
+    cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
 
+    printf("Device Results: %f,%f\nHost Results: %f,%f\n",a[0],a[13],b[0],b[1]);
 
 
 
