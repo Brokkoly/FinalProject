@@ -180,7 +180,6 @@ int main(int argc,char** argv){
     float alpha = .1;
     float lrate = .1;
     int dinterSize = 1024;
-    int numX = rows*cols;
     float offset = 1;
 
     trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
