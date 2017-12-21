@@ -26,18 +26,22 @@ __global__ void applySigmoid(double* hiddenLayer){
 
 
 
-__global__ void bestChoiceKernel(double* results,int* bestIndices,int len){
+__global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int numY){
 
     int tindex = threadIdx.x+blockIdx.x*blockDim.x;
+    double sum = 0;
 
-    int rindex = tindex*10;
+    int rindex = tindex*numY;
+    for(int i = 0; i < numY;i++){
+        sum += results[rindex+i];
+    }
     int max = 0;
     int maxIndex = 0;
     if(tindex<len){
-        for(int i = 0; i < 10;i++){
-            if(results[rindex+i]>max){
+        for(int i = 0; i < numY;i++){
+            if((results[rindex+i]/sum)>max){
                 maxIndex = i;
-                max = results[rindex+i];
+                max = results[rindex+i]/sum;
             }
         }
     }
