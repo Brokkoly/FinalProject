@@ -5,6 +5,7 @@
 #include "kernels.cu"
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include <string>
 #include <fstream>
 #include <random>
