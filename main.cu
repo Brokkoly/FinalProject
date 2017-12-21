@@ -24,7 +24,7 @@ int hibit(unsigned int n) {
 
 float* generateDeviceArray(int size){
     float* deviceArr;
-    cudaMalloc(deviceArr,size*sizeof(float));
+    cudaMalloc(&deviceArr,size*sizeof(float));
     return deviceArr;
 }
 
@@ -80,8 +80,8 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     return x;
 }
 
-unsigned char* numToArr(char num){
-    unsigned char* x = (unsigned char*) malloc(10*sizeof(unsigned char));
+unsigned float* numToArr(char num){
+    unsigned float* x = (float*) malloc(10*sizeof(float));
     for(int i = 0; i < 10;i++){
         if(i==num)x[i]=1;
         else x[i]=0;
@@ -169,7 +169,7 @@ int main(int argc,char** argv){
     float* ddels = generateDeviceArray(NUMY);
     float* dgammas = generateDeviceArray(numH*NUMY);
     float* dinter = generateDeviceArray(1024*1024);
-    float* hWeights1 = generateRandomWeights(numX*numH)
+    float* hWeights1 = generateRandomWeights(numX*numH);
     float* dWeights1 = generateDeviceArray(numX*numH);
     cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(float),cudaMemcpyHostToDevice);
     float* hWeights2 = generateRandomWeights(numH*NUMY);
