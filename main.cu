@@ -65,7 +65,7 @@ double* read_arrLabels(char* filename, int &len) {
     temp = stoi(line);
     if(temp<len) len=temp;
     int tempint = 0;
-    unsigned char *x = (unsigned char*) malloc(10*len * sizeof(char));
+    double *x = (double*) malloc(10*len * sizeof(double));
     for (int i = 0; i < len; i++) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
@@ -145,7 +145,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     //backpropagation:
     
     // printf("dyCorrect then dy\n");
-    printArrFromDevice(dy,1,numY,"OutputY:")
+    printArrFromDevice(dy,1,numY,"OutputY:");
     printArrFromDevice(dyCorrect,1,numY,"CorrectY");
     //printArrFromDevice(dy,1,numY);
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
@@ -167,16 +167,16 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 }
 
 
-void longTraining(int len,double* trainLabels,char* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+void longTraining(int len,double* trainLabels,unsigned char* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
     double* trainImageDouble = (double*) malloc(numX*sizeof(double));
     for(int i = 0; i < len;i++){
-        for(int j = 0; j < numX,j++){
+        for(int j = 0; j < numX;j++){
             trainImageDouble[j] = (double)trainImage[j+i*numX];
         }
-        cudaMemcpy(dx,trainImageDouble,numX*sizeof(double));
+        cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
         //free(hyCorrect);
         //hyCorrect = numToArr(trainLabels[i]);
-        cudaMemcpy(dyCorrect,trainLabels[i*numX],numY*sizeof(double));
+        cudaMemcpy(dyCorrect,trainLabels[i*numX],numY*sizeof(double),cudaMemcpyHostToDevice);
     }
     //free(hyCorrect);
     free(trainImageDouble);
@@ -190,7 +190,7 @@ int main(int argc,char** argv){
 
     int debugLine = 0;
     unsigned char* trainImage;
-    unsigned char* trainLabels;
+    double* trainLabels;
     int len = 1;
     int rows;
     int cols;
