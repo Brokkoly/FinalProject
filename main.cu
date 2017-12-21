@@ -267,9 +267,9 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
         //cudaMemcpy(dyCorrect,testLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
         testingInstance(dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
-        //cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
+        cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
         for(int j = 0;j < numY;j++){
-            //results[j+i*numX] = testLabelsInner[j];
+            results[j+i*numY] = testLabelsInner[j];
         }
     }
     free(testImageDouble);
@@ -377,7 +377,7 @@ int main(int argc,char** argv){
     //bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
     int err = 0;
     int right = 0;
-    /*
+    
     for(int i = 0; i < testLen;i++){
         if(bestMatch[i]!=correct[i]){
             err++;
@@ -386,7 +386,7 @@ int main(int argc,char** argv){
             right++;
         }
     }
-    */
+    
     //printf("# correct: %d\n",right);
     //printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
