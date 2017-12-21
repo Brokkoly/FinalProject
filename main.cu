@@ -404,6 +404,8 @@ int main(int argc,char** argv){
     cudaFree(dWeights2);
     cudaFree(dWeights1);
 
+    free(testLabels);
+    free(testImage);
 
     free(trainLabels);
     free(trainImage);
