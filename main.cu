@@ -7,8 +7,9 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
+#include <random>
 //#include <math>
-#define NUMY 10
+#define NUMY 2
 using std::ifstream;
 using std::string;
 using std::ofstream;
@@ -22,20 +23,37 @@ int hibit(unsigned int n) {
     return n - (n >> 1);
 }
 
-float* generateDeviceArray(int size){
-    float* deviceArr;
-    cudaMalloc(&deviceArr,size*sizeof(float));
+double* generateDeviceArray(int size){
+    double* deviceArr;
+    cudaMalloc(&deviceArr,size*sizeof(double));
     return deviceArr;
 }
 
-float* generateRandomWeights(int size){
-    float* weightArr = (float*) malloc(size*sizeof(float));
+double* generateRandomWeights(int size){
+    double* weightArr = (double*) malloc(size*sizeof(double));
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(-.1,.1);
     for(int i = 0; i < size;i++){
-        weightArr[i] = .1;
+        weightArr[i] = distribution(generator);
     }
     return weightArr;
 }
 
+void printArr(double* arr,int rows,int cols){
+    for(int i = 0; i < rows;i++){
+        for(int j = 0; j < cols;j++){
+            printf(" %lf ", arr[i*cols+j] );
+        }
+        printf("\n");
+    }
+}
+
+void printArrFromDevice(double* darr,int rows,int cols){
+    double* harr = (double*) malloc(rows*cols*sizeof(double))
+    cudaMemcpy(harr,darr,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    printArr(harr,rows,cols);
+    free(harr);
+}
 
 unsigned char* read_arrLabels(char* filename, int &len) {
     
@@ -50,7 +68,7 @@ unsigned char* read_arrLabels(char* filename, int &len) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
         x[i] = stoi(line);
-        printf("i = %d,x[i] = %d",i,x[i]);
+        //printf("i = %d,x[i] = %d",i,x[i]);
     }
     infile.close();
     return x;
@@ -80,8 +98,8 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     return x;
 }
 
-float* numToArr(char num){
-    float* x = (float*) malloc(10*sizeof(float));
+double* numToArr(char num){
+    double* x = (double*) malloc(10*sizeof(double));
     for(int i = 0; i < 10;i++){
         if(i==num)x[i]=1;
         else x[i]=0;
@@ -89,12 +107,15 @@ float* numToArr(char num){
 }
 
 
-void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float* dWeights1,float* dWeights2,float* ddeltas1,float* ddeltas2,int numX,int numH,int numY,float offset,float alpha,float lrate,int dinterSize){
-    float* testOutput = (float*)malloc(10*sizeof(float));
+void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+    double* testOutput = (double*)malloc(10*sizeof(double));
     //firstLayer
+    printArrFromDevice(dx,1,numX);
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
+    printArrFromDevice(dWeights1,numH,numX);
     printf("First forward propagation done\n");
-    matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,hibit(1024));
+    matrixReduction<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
+    printArrFromDevice(dH,1,numH);
     printf("First reduction done\n");
 
     sigmoidKernel<<<1,numH>>>(dh);
@@ -104,17 +125,17 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
     //second layer:
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
     printf("second forward propagation done\n");
-    matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,hibit(1024));
+    matrixReduction<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
     printf("second reduction done\n");
-    cudaMemcpy(testOutput,dy,10*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy(testOutput,dy,10*sizeof(double),cudaMemcpyDeviceToHost);
     for(int i = 0; i < 10;i++){
-        printf("%d: %f",i,testOutput[i]);
+        printf("%d: %f\n",i,testOutput[i]);
     }
     sigmoidKernel<<<1,numY>>>(dy);
     printf("second sigmoid done\n");
-    cudaMemcpy(testOutput,dy,10*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy(testOutput,dy,10*sizeof(double),cudaMemcpyDeviceToHost);
     for(int i = 0; i < 10;i++){
-        printf("%d: %f",i,testOutput[i]);
+        printf("%d: %f\n",i,testOutput[i]);
     }
     //second layer done
 
@@ -124,7 +145,7 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     //dim3 grid(numY,numH);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
-    matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas,numY,hibit(numY));
+    matrixReduction<<<numH,numY,numY*sizeof(double)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
     free(testOutput);
 }
@@ -167,29 +188,30 @@ int main(int argc,char** argv){
 
     int numX = rows*cols;
     int numY = NUMY;
-    int numH = 500;
-    float* dx = generateDeviceArray(rows*cols);
-    cudaMemcpy(dx,trainImage,rows*cols*sizeof(float),cudaMemcpyHostToDevice);
-    float* dh = generateDeviceArray(numH);
-    float* dy = generateDeviceArray(NUMY);
-    float* dyCorrect = generateDeviceArray(NUMY);
-    float* hyCorrect = numToArr(trainLabels[0]);
-    cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(float),cudaMemcpyHostToDevice);
-    float* ddels = generateDeviceArray(NUMY);
-    float* dgammas = generateDeviceArray(numH*NUMY);
-    float* dinter = generateDeviceArray(1024*1024);
-    float* hWeights1 = generateRandomWeights(numX*numH);
-    float* dWeights1 = generateDeviceArray(numX*numH);
-    cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(float),cudaMemcpyHostToDevice);
-    float* hWeights2 = generateRandomWeights(numH*NUMY);
-    float* dWeights2 = generateDeviceArray(numH*NUMY);
-    cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(float),cudaMemcpyHostToDevice);
-    float* ddeltas1 = generateDeviceArray(rows*cols*numH);
-    float* ddeltas2 = generateDeviceArray(numH*NUMY);
-    float alpha = .1;
-    float lrate = .1;
+    int numH = 2;
+    double* dx = generateDeviceArray(rows*cols);
+    cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    double* dh = generateDeviceArray(numH);
+    double* dy = generateDeviceArray(NUMY);
+    double* dyCorrect = generateDeviceArray(NUMY);
+    double* hyCorrect = numToArr(trainLabels[0]);
+    cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
+    double* ddels = generateDeviceArray(NUMY);
+    double* dgammas = generateDeviceArray(numH*NUMY);
+    double* dinter = generateDeviceArray(1024*1024);
+    double* hWeights1 = generateRandomWeights(numX*numH);
+    printArr(hWeights1,numH,numX);
+    double* dWeights1 = generateDeviceArray(numX*numH);
+    cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
+    double* hWeights2 = generateRandomWeights(numH*NUMY);
+    double* dWeights2 = generateDeviceArray(numH*NUMY);
+    cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
+    double* ddeltas1 = generateDeviceArray(rows*cols*numH);
+    double* ddeltas2 = generateDeviceArray(numH*NUMY);
+    double alpha = .1;
+    double lrate = .1;
     int dinterSize = 1024;
-    float offset = 1;
+    double offset = 1;
 
     trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
@@ -221,8 +243,8 @@ int main(int argc,char** argv){
     //get inputs from test file
 
     //todo: add main
-    /*float* a = (float*) malloc(2*13*sizeof(float));
-    float* b = (float*) malloc(2);
+    /*double* a = (double*) malloc(2*13*sizeof(double));
+    double* b = (double*) malloc(2);
     for(int i = 0; i < 13;i++){
         a[i] = i;
         b[0] +=i;
@@ -231,12 +253,12 @@ int main(int argc,char** argv){
     }
     a[13] +=100;
     b[1]+=100;
-    float* da;
+    double* da;
     printf("hibit: %x\n",hibit(13));
-    cudaMalloc(&da,sizeof(float)*26);
-    cudaMemcpy(da,a,sizeof(float)*26,cudaMemcpyHostToDevice);
-    matrixReductionDestructive<<<2,13,13*sizeof(float)>>>(da,13,hibit(13)<<1);
-    cudaMemcpy(a,da,sizeof(float)*26,cudaMemcpyDeviceToHost);
+    cudaMalloc(&da,sizeof(double)*26);
+    cudaMemcpy(da,a,sizeof(double)*26,cudaMemcpyHostToDevice);
+    matrixReductionDestructive<<<2,13,13*sizeof(double)>>>(da,13,hibit(13)<<1);
+    cudaMemcpy(a,da,sizeof(double)*26,cudaMemcpyDeviceToHost);
 
     printf("Device Results: %f,%f\n",a[0],a[13]);
     printf("Host Results: %f,%f\n",b[0],b[1]);
