@@ -13,7 +13,41 @@ int hibit(unsigned int n) {
     n |= (n >> 16);
     return n - (n >> 1);
 }
+
+
+unsigned char* read_array(const char* filename, int len) {
+    
+    FILE *fp = fopen(filename, "r");
+    int temp;
+    fscanf(fp,"%d",&temp);
+    if(temp<len)len=temp;
+    float *x = (float*) malloc(len * sizeof(float));
+    for (int i = 0; i < len; i++) {
+        fscanf(fp, "%f", &x[i]);
+    }
+    fclose(fp);
+    return x;
+}
+unsigned char* read_array(const char* filename, int* len,int* rows,int* cols) {
+    FILE *fp = fopen(filename, "r");
+    int temp;
+    fscanf(fp,"%d",&temp);
+    if(temp<len) len=temp;
+    fscanf(fp,"%d",&rows);
+    fscanf(fp,"%d",&cols);
+    float *x = (float*) malloc(len * sizeof(char));
+    for (int i = 0; i < len*rows*cols; i++) {
+        fscanf(fp, "%f", &x[i]);
+    }
+    fclose(fp);
+    return x;
+}
+
+
 int main(int argc,char** argv){
+
+
+
 
     //Initialize weight matrices
 

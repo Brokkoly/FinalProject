@@ -112,4 +112,24 @@ __global__ void matrixReduction(float *g_data,float* o_data,int size,int biggerS
 
 }
 
+__global__ void matrixReductionToVector(float *g_data,float* o_data,int size,int biggerSize)
+{
+    extern __shared__ float sdata[];
+    unsigned int tindex = (threadIdx.x);
+    unsigned int i = blockIdx.x*size+threadIdx.x;
+    sdata[tindex] = g_data[i];
+    __syncthreads();
+
+    for(unsigned int s = biggerSize/2;s>=0;s>>=1){
+        //int index = 2*s*tindex;
+        if((tindex<(s))&&((tindex+s)<blockDim.x)){
+            sdata[tindex]+=sdata[tindex+s];
+        }
+        __syncthreads();
+        if(s == 0) break;
+    }
+    if(tindex==0) o_data[blockIdx.x] = sdata[0];
+
+}
+
 #endif
