@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <math>
 #include <random>
 //#include <math>
 #define NUMY 10
@@ -31,12 +32,12 @@ double* generateDeviceArray(int size){
     return deviceArr;
 }
 
-double* generateRandomWeights(int size){
+double* generateRandomWeights(int size,int numInputs,double* scalar){
     double* weightArr = (double*) malloc(size*sizeof(double));
     std::default_random_engine generator;
-    std::uniform_real_distribution<double> distribution(-.1,.1);
+    std::uniform_real_distribution<double> distribution(-scalar,scalar);
     for(int i = 0; i < size;i++){
-        weightArr[i] = distribution(generator);
+        weightArr[i] = distribution(generator)*sqrt(2.0/n);
     }
     return weightArr;
 }
@@ -364,7 +365,7 @@ int main(int argc,char** argv){
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
     double* dinter = generateDeviceArray(1024*1024);
-    double* hWeights1 = generateRandomWeights(numX*numH);
+    double* hWeights1 = generateRandomWeights(numX*numH,numX,1);
     //printArr(hWeights1,numH,numX,"");
     double* dWeights1 = generateDeviceArray(numX*numH);
     double* hdeltas1 = (double*)malloc(numX*numH*sizeof(double));
@@ -377,7 +378,7 @@ int main(int argc,char** argv){
     }
 
     cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
-    double* hWeights2 = generateRandomWeights(numH*NUMY);
+    double* hWeights2 = generateRandomWeights(numH*NUMY,numH,1);
     double* dWeights2 = generateDeviceArray(numH*NUMY);
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
@@ -409,6 +410,8 @@ cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
    cudaMemcpy(bestMatch,dbestMatch,testLen*sizeof(int),cudaMemcpyDeviceToHost);
     int err = 0;
     int right = 0;
+
+
   // int temp = bestMatch[0];
 //double temp2 = results[0];
 //int temp = correct[0];
