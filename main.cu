@@ -80,8 +80,8 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     return x;
 }
 
-unsigned float* numToArr(char num){
-    unsigned float* x = (float*) malloc(10*sizeof(float));
+float* numToArr(char num){
+    float* x = (float*) malloc(10*sizeof(float));
     for(int i = 0; i < 10;i++){
         if(i==num)x[i]=1;
         else x[i]=0;
