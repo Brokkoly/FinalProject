@@ -35,6 +35,7 @@ __global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int nu
     for(int i = 0; i < numY;i++){
         sum += results[rindex+i];
     }
+	sum = sum/numY;
     int max = 0;
     int maxIndex = 0;
     if(tindex<len){
