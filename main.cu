@@ -295,6 +295,7 @@ int main(int argc,char** argv){
     int len = std::stoi(argv[2]);
     double LR = atof(argv[3]);
     double alpha = atof(argv[4]);
+int numH = std::stoi(argv[5]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
@@ -347,7 +348,7 @@ int main(int argc,char** argv){
 
     int numX = rows*cols;
     int numY = NUMY;
-    int numH = 50;
+//    int numH = 50;
 
 
     
@@ -372,7 +373,7 @@ int main(int argc,char** argv){
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
-    double alpha = .1;
+//    double alpha = .1;
     double lrate = LR;
     int dinterSize = 1024;
     double offset = .1;
@@ -430,12 +431,12 @@ for(int i =0; i < 10;i++){
             right++;
         }
     }
-    printf("# training data: %d\n",len);
-    printf("# hidden layers: %d\n",numH);
+    printf("num training data: %d\n",len);
+    printf("num hidden layers: %d\n",numH);
     printf("Learning Rate: %lf\n",lrate);
     printf("Alpha: %lf\n",alpha);
-    printf("# correct: %d\n",right);
-    printf("# wrong: %d\n",err);
+    printf("num correct: %d\n",right);
+    printf("num wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
 
