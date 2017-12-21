@@ -49,6 +49,7 @@ __global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int nu
     
 }
 
+
 __global__ void backPropagationFirstKernel(double* inputLayer,double* outputLayer,double* outputLayerTrue,double* weights,double* deltas,double* dels,double alpha,double lrate){
     int tindex = threadIdx.x;
     int oindex = blockIdx.x;
