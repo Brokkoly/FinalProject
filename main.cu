@@ -235,7 +235,7 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epoc
     free(trainLabelsInner);
 }
 
-void testing(int len,double* testLabels,unsigned char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2int numX,int numH,int numY,double offset,int dinterSize){
+void testing(int len,double* testLabels,unsigned char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
 
     double* testImageDouble = (double*) malloc(numX*sizeof(double));
     double* testLabelsInner = (double*) malloc(numY*sizeof(double));
@@ -283,7 +283,7 @@ int main(int argc,char** argv){
     int rows;
     int cols;
 
-    unsigned char* testImaage;
+    unsigned char* testImage;
     double* testLabels;
     int* correct;
 
