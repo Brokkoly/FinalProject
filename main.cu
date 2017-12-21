@@ -41,9 +41,9 @@ double* generateRandomWeights(int size){
 
 void printArr(double* arr,int rows,int cols){
     printf("PRINTING NEW ARRAY!\n");
-    for(int i = 0; i < cols;i++){
-        for(int j = 0; j < rows;j++){
-            printf(" %lf ", arr[i*rows+j] );
+    for(int i = 0; i < rows;i++){
+        for(int j = 0; j < cols;j++){
+            printf(" %lf ", arr[i*cols+j] );
         }
         printf("\n");
     }
@@ -142,13 +142,17 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     printf("Deltas for W2: \n");
-    printArrFromDevice(ddeltas2,numH,numY);
+    printArrFromDevice(ddeltas2,numY,numH);
     //dim3 grid(numY,numH);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
+    printf("dgammas\n");
+
+    printArrFromDevice(dgammas,numH,numY);
+
     matrixReduction<<<numH,numY,numY*sizeof(double)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
     printf("Deltas for W1: \n");
-    printArrFromDevice(ddeltas1,numX,numH);
+    printArrFromDevice(ddeltas1,numH,numX);
     //free(testOutput);
 }
 
