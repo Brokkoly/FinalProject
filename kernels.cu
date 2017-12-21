@@ -62,11 +62,12 @@ __global__ void backPropagationSecondKernelPart2(float* inputLayer,float* gammas
     deltas[windex] = (1-alpha)*lrate*gammas[gindex]*inputLayer[tindex]+alpha*deltas[windex];
     weights[windex] = weights[windex]-deltas[windex];
 }
-__global__ void forwardPropagation(float* x,float*Y,float* W,int yWidth){
+__global__ void forwardPropagation(float* x,float*Y,float* W,int yWidth,float offset){
     int tindex = threadIdx.x;
     int yindex = threadIdx.x+blockIdx.x*yWidth;//yWidth different because it has to be an exponent of 2
     int windex = threadIdx.x+blockIdx.x*blockDim.x;
     Y[yindex] = x[tindex]*W[windex];
+    if(tindex==0)Y[yindex]+=offset;
     //then perform reduction,then sigmoid
 }
 __global__ void sigmoidKernel(float* y){

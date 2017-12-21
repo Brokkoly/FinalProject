@@ -7,7 +7,8 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
-
+#include <math>
+#define NUMY 10
 using std::ifstream;
 using std::string;
 using std::ofstream;
@@ -19,6 +20,18 @@ int hibit(unsigned int n) {
     n |= (n >>  8);
     n |= (n >> 16);
     return n - (n >> 1);
+}
+
+float* generateDeviceArray(int size){
+    float* deviceArr;
+    cudaMalloc(deviceArr,size*sizeof(float));
+}
+
+float* generateRandomWeights(int size){
+    float* weightArr = (float*) malloc(size*sizeof(float));
+    for(int i = 0; i < size;i++){
+        weightArr[i] = .1
+    }
 }
 
 
@@ -65,6 +78,13 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     return x;
 }
 
+unsigned char* numToArr(char num){
+    unsigned char* x = (unsigned char*) malloc(10*sizeof(unsigned char));
+    for(int i = 0; i < 10;i++){
+        if(i==num)x[i]=1;
+        else x[i]=0;
+    }
+}
 
 int main(int argc,char** argv){
 
@@ -75,26 +95,70 @@ int main(int argc,char** argv){
     int len = 1;
     int rows;
     int cols;
-    printf("Got to debug # %d\n",++debugLine);
+
+
+
+
+
+    
+    //printf("Got to debug # %d\n",++debugLine);
+    
     trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
-    printf("Got to debug # %d\n",++debugLine);
-    for(int i = 0; i < rows;i++){
-        for(int j = 0; j < cols;j++){
-            printf("%d ",trainImage[i*cols+j]);
-        }
-        printf("\n");
-    }
-    len = 10;
-    printf("Got to debug # %d\n",++debugLine);
+    // for(int i = 0; i < rows;i++){
+    //     for(int j = 0; j < cols;j++){
+    //         printf("%d ",trainImage[i*cols+j]);
+    //     }
+    //     printf("\n");
+    // }
+    len = 1;
+
+
+
     trainLabels = read_arrLabels("labelsTrain.txt",len);
     printf("Len: %d\n",len);
-    for(int i = 0; i < 10;i++){
-        printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
-    }
+    // for(int i = 0; i < 10;i++){
+    //     printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
+    // }
+
+
+    int numX = rows*cols;
+    int numY = NUMY;
+    int numH = 500;
+    float* dx = generateDeviceArray(rows*cols);
+    cudaMemcpy(dx,trainImage,rows*cols*sizeof(float),cudaMemcpyHostToDevice);
+    float* dh = generateDeviceArray(numH);
+    float* dy = generateDeviceArray(NUMY);
+    float* dyCorrect = generateDeviceArray(NUMY);
+    float* hyCorrect = numToArr(trainLabels[0]);
+    cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(float),cudaMemcpyHostToDevice);
+    float* ddels = generateDeviceArray(NUMY);
+    float* dgammas = generateDeviceArray(numH*NUMY);
+    float* dinter = generateDeviceArray(1024*1024);
+    float* hWeights1 = generateRandomWeights(numX*numH)
+    float* dWeights1 = generateDeviceArray(numX*numH);
+    cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(float),cudaMemcpyHostToDevice);
+    float* hWeights2 = generateRandomWeights(numH*NUMY);
+    float* dWeights2 = generateDeviceArray(numH*NUMY);
+    cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(float),cudaMemcpyHostToDevice);
+    float* ddeltas1 = generateDeviceArray(rows*cols*numH);
+    float* ddeltas2 = generateDeviceArray(numH*NUMY);
+    float alpha = .1;
+    float lrate = .1;
+    int dinterSize = 1024;
+    int numX = rows*cols;
+    float offset = 1;
+
+    trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
+    
+
+
+
+
+
     free(trainLabels);
     free(trainImage);
-
+    
     //Initialize weight matrices
 
     //get inputs from training file
@@ -127,30 +191,35 @@ int main(int argc,char** argv){
 }
 
 
-void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float** dWeights,float** ddeltas,int numX,int numH,int numY,float alpha,float lrate,int dinterSize){
+void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float* dWeights1,float* dWeights2,float* ddeltas1,float* ddeltas2,int numX,int numH,int numY,float offset,float alpha,float lrate,int dinterSize){
 
     //firstLayer
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights[0],dinterSize);
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
+    printf("First forward propagation done\n");
     matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,hibit(1024));
+    printf("First reduction done\n");
     sigmoidKernel<<<1,numH>>>(dh);
-
+    printf("First sigmoid done\n");
     //first layer done
 
     //second layer:
-    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights[1],dinterSize);
+    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
+    printf("second forward propagation done\n");
     matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,hibit(1024));
-    sigmoidKernel<<<1,numY>>>(dy);
+    printf("second reduction done\n");
 
+    sigmoidKernel<<<1,numY>>>(dy);
+    printf("second sigmoid done\n");
     //second layer done
 
     //backpropagation:
     
 
-    backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights[1],ddeltas[1],ddels,alpha,lrate);
+    backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     //dim3 grid(numY,numH);
-    backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights[1],ddels,alpha,lrate);
+    backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
     matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas,numY,hibit(numY));
-    backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights[0],ddeltas[0],alpha,lrate);
+    backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
 
 
 
