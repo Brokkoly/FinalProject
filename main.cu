@@ -371,9 +371,10 @@ int main(int argc,char** argv){
 
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
-    bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
+    //bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
     int err = 0;
     int right = 0;
+    /*
     for(int i = 0; i < testLen;i++){
         if(bestMatch[i]!=correct[i]){
             err++;
@@ -382,8 +383,9 @@ int main(int argc,char** argv){
             right++;
         }
     }
-    printf("# correct: %d\n",right);
-    printf("# wrong: %d\n",err);
+    */
+    //printf("# correct: %d\n",right);
+    //printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
 
