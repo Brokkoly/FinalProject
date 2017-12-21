@@ -26,7 +26,7 @@ __global__ void applySigmoid(double* hiddenLayer){
 
 
 
-__global__ void bestChoiceKernel(double* results,double* bestIndices,int len){
+__global__ void bestChoiceKernel(double* results,int* bestIndices,int len){
 
     int tindex = threadIdx.x+blockIdx.x*blockDim.x;
 

@@ -365,19 +365,25 @@ int main(int argc,char** argv){
     double offset = 1;
 
     double* results = (double*)malloc(testLen*NUMY*sizeof(double));
-    double* bestMatch = (double*)malloc(testLen*sizeof(double));
+    int* bestMatch = (int*)malloc(testLen*sizeof(int));
 
 
     longTraining(len,trainLabels,trainImage,epochs,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
-    //testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+    testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
-    //bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
+    bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
     int err = 0;
     int right = 0;
-    
+  // int temp = bestMatch[0];
+double temp2 = results[0];
+//int temp = correct[0];
+//printf("%d\n",temp);
+printf("%lf\n",temp2);
+//printf("%d\n",correct[0]);
+/*
     for(int i = 0; i < testLen;i++){
         if(bestMatch[i]!=correct[i]){
             err++;
@@ -386,9 +392,9 @@ int main(int argc,char** argv){
             right++;
         }
     }
-    
-    //printf("# correct: %d\n",right);
-    //printf("# wrong: %d\n",err);
+  */ 
+    printf("# correct: %d\n",right);
+    printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
 
@@ -411,7 +417,9 @@ int main(int argc,char** argv){
 
     free(testLabels);
     free(testImage);
-
+	free(correct);
+free(results);
+free(bestMatch);
     free(trainLabels);
     free(trainImage);
     
