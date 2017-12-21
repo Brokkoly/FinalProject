@@ -35,9 +35,9 @@ double* generateDeviceArray(int size){
 double* generateRandomWeights(int size,int numInputs,double* scalar){
     double* weightArr = (double*) malloc(size*sizeof(double));
     std::default_random_engine generator;
-    std::uniform_real_distribution<double> distribution(-scalar,scalar);
+    std::uniform_real_distribution<double> distribution(-1*scalar,scalar);
     for(int i = 0; i < size;i++){
-        weightArr[i] = distribution(generator)*sqrt(2.0/n);
+        weightArr[i] = distribution(generator)*sqrt(2.0/numInputs);
     }
     return weightArr;
 }
@@ -365,7 +365,7 @@ int main(int argc,char** argv){
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
     double* dinter = generateDeviceArray(1024*1024);
-    double* hWeights1 = generateRandomWeights(numX*numH,numX,1);
+    double* hWeights1 = generateRandomWeights(numX*numH,numX,1.0);
     //printArr(hWeights1,numH,numX,"");
     double* dWeights1 = generateDeviceArray(numX*numH);
     double* hdeltas1 = (double*)malloc(numX*numH*sizeof(double));
@@ -378,7 +378,7 @@ int main(int argc,char** argv){
     }
 
     cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
-    double* hWeights2 = generateRandomWeights(numH*NUMY,numH,1);
+    double* hWeights2 = generateRandomWeights(numH*NUMY,numH,1.0);
     double* dWeights2 = generateDeviceArray(numH*NUMY);
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
