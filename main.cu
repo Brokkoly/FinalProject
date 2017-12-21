@@ -17,7 +17,7 @@ int hibit(unsigned int n) {
 }
 
 
-unsigned char* read_array(string filename, int* len) {
+unsigned char* read_arrLabels(std::string filename, int* len) {
     
     FILE *fp = fopen(filename, "r");
     int temp;
@@ -30,7 +30,7 @@ unsigned char* read_array(string filename, int* len) {
     fclose(fp);
     return x;
 }
-unsigned char* read_array(string filename, int* len,int* rows,int* cols) {
+unsigned char* read_arrImage(std::string filename, int* len,int* rows,int* cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
@@ -53,7 +53,7 @@ int main(int argc,char** argv){
     int len = 1;
     int rows;
     int cols;
-    trainImage = read_array("imagesTrain.txt",len,rows,cols);
+    trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
@@ -61,7 +61,7 @@ int main(int argc,char** argv){
         }
     }
     len = 10;
-    trainLabels = read_array("labelsTrain.txt",len);
+    trainLabels = read_arrLabels("labelsTrain.txt",len);
     printf("Len:\n",len,rows,cols);
     for(int i = 0; i < 10;i++){
         printf("trainLabels[%d]: %d",i,trainLabels[i]);
