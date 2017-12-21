@@ -283,7 +283,8 @@ int main(int argc,char** argv){
     int rows;
     int cols;
 
-
+    unsigned char* testImaage;
+    double* testLabels;
     int* correct;
 
 
@@ -319,7 +320,7 @@ int main(int argc,char** argv){
         
     }
     */
-    
+    int testLen;
     testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
     testLabels = read_arrLabelsTest("labelsTest.txt",testlen,correct);
     //int numX = 10;
@@ -363,22 +364,22 @@ int main(int argc,char** argv){
 
     longTraining(len,trainLabels,trainImage,epochs,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
-    testing(testLen,testLabels,testImage,results,dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+    testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
     bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
     int err = 0;
-    int correct = 0;
+    int right = 0;
     for(int i = 0; i < testLen;i++){
         if(bestMatch[i]!=correct[i]){
             err++;
         }
         else{
-            correct++;
+            right++;
         }
     }
-    printf("# correct: %d\n",correct);
+    printf("# correct: %d\n",right);
     printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
