@@ -292,7 +292,7 @@ int main(int argc,char** argv){
     unsigned char* testImage;
     double* testLabels;
     int* correct;
-
+    int epochs = std::stoi(argv[1]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
@@ -346,7 +346,6 @@ correct = (int*) malloc(testLen*sizeof(int));
     int numX = rows*cols;
     int numY = NUMY;
     int numH = 50;
-    int epochs = 10;
 
 
     
@@ -383,7 +382,8 @@ correct = (int*) malloc(testLen*sizeof(int));
     longTraining(len,trainLabels,trainImage,epochs,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
     testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
-
+int* dbestMatch;
+	cudaMalloc(
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
     bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
@@ -399,7 +399,7 @@ correct = (int*) malloc(testLen*sizeof(int));
 
 
     for(int i = 0; i < testLen;i++){
-
+        printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
         if(bestMatch[i]!=correct[i]){
             err++;
         }
