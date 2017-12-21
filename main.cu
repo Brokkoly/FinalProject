@@ -180,7 +180,7 @@ int main(int argc,char** argv){
 
 
 
-    //trainLabels = read_arrLabels("labelsTrain.txt",len);
+    trainLabels = read_arrLabels("labelsTrain.txt",len);
     //trainLabels = (double*) malloc(2*sizeof(double));
     printf("Len: %d\n",len);
     // for(int i = 0; i < 10;i++){
@@ -195,7 +195,7 @@ int main(int argc,char** argv){
     //int numX = rows*cols;
     int numY = NUMY;
     int numH = 2;
-    double* dx = generateDeviceArray(rows*cols);
+    double* dx = generateDeviceArray(numX);
     //cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
     cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
     free(trainImageDouble);
