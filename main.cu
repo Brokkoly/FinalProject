@@ -112,7 +112,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     double* testOutput = (double*)malloc(10*sizeof(double));
     //firstLayer
     printArrFromDevice(dx,1,numX);
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
     printArrFromDevice(dWeights1,numH,numX);
     printf("First forward propagation done\n");
     matrixReduction<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
@@ -122,22 +122,17 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     sigmoidKernel<<<1,numH>>>(dh);
     printf("First sigmoid done\n");
     //first layer done
-
+    printArrFromDevice(dh,1,numH);
     //second layer:
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
     printf("second forward propagation done\n");
+    printArrFromDevice(dWeights2,numY,numH);
     matrixReduction<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
     printf("second reduction done\n");
-    cudaMemcpy(testOutput,dy,10*sizeof(double),cudaMemcpyDeviceToHost);
-    for(int i = 0; i < 10;i++){
-        printf("%d: %f\n",i,testOutput[i]);
-    }
+    printArrFromDevice(dy,1,numY);
     sigmoidKernel<<<1,numY>>>(dy);
+    printArrFromDevice(dy,1,numY);
     printf("second sigmoid done\n");
-    cudaMemcpy(testOutput,dy,10*sizeof(double),cudaMemcpyDeviceToHost);
-    for(int i = 0; i < 10;i++){
-        printf("%d: %f\n",i,testOutput[i]);
-    }
     //second layer done
 
     //backpropagation:
