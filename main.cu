@@ -122,7 +122,7 @@ double* read_arrLabelsTest(char* filename, int &len,int* correct) {
     infile.close();
     return x;
 }
-unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
+char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     //FILE *fp = fopen(filename, "r");
     ifstream infile(filename);
     int temp;
@@ -137,7 +137,7 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     cols = stoi(line);
     //fscanf(fp,"%d",&rows);
     //fscanf(fp,"%d",&cols);
-    unsigned char *x = (unsigned char*) malloc(len*(rows)*(cols) * sizeof(char));
+    char *x = (char*) malloc(len*(rows)*(cols) * sizeof(char));
     for (int i = 0; i < len*(rows)*(cols); i++) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
@@ -212,7 +212,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 }
 
 
-void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epochs,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+void longTraining(int len,double* trainLabels,char* trainImage,int epochs,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
 
 
     double* trainImageDouble = (double*) malloc(numX*sizeof(double));
@@ -249,7 +249,7 @@ void testingInstance(double* dx,double* dh, double* dy,double* dinter,double* dW
     sigmoidKernel<<<1,numY>>>(dy);
 }
 
-void testing(int len,double* testLabels,unsigned char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
+void testing(int len,double* testLabels,char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
 
     double* testImageDouble = (double*) malloc(numX*sizeof(double));
     double* testLabelsInner = (double*) malloc(numY*sizeof(double));
@@ -283,20 +283,20 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
 int main(int argc,char** argv){
 
 
-    unsigned char* trainImage;
+    char* trainImage;
     double* trainLabels;
     int len = 10000;
     int rows;
     int cols;
 	srand(time(NULL));
-    unsigned char* testImage;
+    char* testImage;
     double* testLabels;
     int* correct;
     int epochs = std::stoi(argv[1]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
-    //trainImage = (unsigned char* )malloc(10*sizeof(unsigned char));
+    //trainImage = (char* )malloc(10*sizeof(char));
     trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     /*
@@ -410,7 +410,7 @@ printf("\n");
 }
 
     for(int i = 0; i < testLen;i++){
-if(i%1001==0){
+if(i<10){
        printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
 	
 }
