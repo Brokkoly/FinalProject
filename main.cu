@@ -117,7 +117,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     printArrFromDevice(dinter,2,1024);
     printArrFromDevice(dWeights1,numH,numX);
     printf("First forward propagation done\n");
-    matrixReduction<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
+    matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
     printArrFromDevice(dh,1,numH);
     printf("First reduction done\n");
 
@@ -129,7 +129,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
     printf("second forward propagation done\n");
     printArrFromDevice(dWeights2,numY,numH);
-    matrixReduction<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
+    matrixReductionToVector<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
     printf("second reduction done\n");
     printArrFromDevice(dy,1,numY);
     sigmoidKernel<<<1,numY>>>(dy);
