@@ -294,7 +294,7 @@ int main(int argc,char** argv){
     int* correct;
 
     if(argc!=6){
-        printf("%s requires 5 additional variables:\nNum Epocs\nNumber of Training Samples\nLearning rate (float/double)\nInertia (float/double)\nNumber of nodes in the hidden layer\n",argc[1]);
+        printf("%s requires 5 additional variables:\nNum Epocs\nNumber of Training Samples\nLearning rate (float/double)\nInertia (float/double)\nNumber of nodes in the hidden layer\n",argv[1]);
         return 0;
     }
 
