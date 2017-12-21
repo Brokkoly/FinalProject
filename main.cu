@@ -146,14 +146,16 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     return x;
 }
 
+/*
 double* numToArr(char num){
     double* x = (double*) malloc(10*sizeof(double));
     for(int i = 0; i < 10;i++){
         if(i==num)x[i]=1;
         else x[i]=0;
     }
-}
 
+}
+*/
 
 void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
     //double* testOutput = (double*)malloc(10*sizeof(double));
@@ -233,6 +235,15 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epoc
     //free(hyCorrect);
     free(trainImageDouble);
     free(trainLabelsInner);
+}
+
+void testingInstance(double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
+    matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
+    sigmoidKernel<<<1,numH>>>(dh);
+    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
+    matrixReductionToVector<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
+    sigmoidKernel<<<1,numY>>>(dy);
 }
 
 void testing(int len,double* testLabels,unsigned char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
