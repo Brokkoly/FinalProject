@@ -139,7 +139,9 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
     //backpropagation:
     
-
+    printf("dyCorrect then dy\n");
+    printArrFromDevice(dyCorrect,1,numY);
+    printArrFromDevice(dy,1,numY);
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     printf("Deltas for W2: \n");
     printArrFromDevice(ddeltas2,numY,numH);
