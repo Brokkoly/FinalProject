@@ -26,6 +26,7 @@ unsigned char* read_arrLabels(char* filename, int &len) {
     unsigned char *x = (unsigned char*) malloc(len * sizeof(char));
     for (int i = 0; i < len; i++) {
         fscanf(fp, "%f", &x[i]);
+        printf("i = %d,x[i] = %d",i,x[i]);
     }
     fclose(fp);
     return x;
