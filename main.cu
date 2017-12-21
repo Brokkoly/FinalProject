@@ -280,7 +280,6 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
 int main(int argc,char** argv){
 
 
-    int debugLine = 0;
     unsigned char* trainImage;
     double* trainLabels;
     int len = 60000;
