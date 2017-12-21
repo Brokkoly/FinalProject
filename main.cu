@@ -220,7 +220,7 @@ void longTraining(int len,double* trainLabels,char* trainImage,int epochs,double
     for(int q = 0; q < epochs;q++){
         for(int i = 0; i < len;i++){
             for(int j = 0; j < numX;j++){
-                trainImageDouble[j] = (double)trainImage[j+i*numX];
+                trainImageDouble[j] = ((double)trainImage[j+i*numX]-127.5)/127.5;
             }
             for(int j = 0; j < numY;j++){
                 trainLabelsInner[j] = trainLabels[j+i*numY];
@@ -255,7 +255,7 @@ void testing(int len,double* testLabels,char* testImage,double* results,double* 
     double* testLabelsInner = (double*) malloc(numY*sizeof(double));
     for(int i = 0; i < len;i++){
         for(int j = 0; j < numX;j++){
-                testImageDouble[j] = (double)testImage[j+i*numX];
+                testImageDouble[j] = ((double)testImage[j+i*numX]-127.5)/127.5;
             }
         for(int j = 0; j < numY;j++){
                 testLabelsInner[j] = testLabels[j+i*numY];
