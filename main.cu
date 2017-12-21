@@ -72,7 +72,7 @@ double* read_arrLabels(char* filename, int &len) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
         tempint = stoi(line);
-        printf("tempint: %d\n",tempint);
+        //printf("tempint: %d\n",tempint);
         for(int j = 0; j < 10;j++){
             if(tempint == j) {
                 x[i*10+j] = 1.0;
@@ -81,7 +81,7 @@ double* read_arrLabels(char* filename, int &len) {
             {
                 x[i*10+j]=0.0;
             }
-            printf("x[%d*10+%d] = %lf",i,j,x[i*10+j]);
+            //printf("x[%d*10+%d] = %lf",i,j,x[i*10+j]);
         }
         //printf("i = %d,x[i] = %d",i,x[i]);
     }
@@ -185,10 +185,10 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,double* 
         }
         for(int j = 0; j < numY;j++){
             trainLabelsInner[j] = trainLabels[j+i*numY];
-            printf(" %lf ",trainLabelsInner[j]);
+            //printf(" %lf ",trainLabelsInner[j]);
 
         }
-        printf("\n");
+        //printf("\n");
         cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
         //free(hyCorrect);
         //hyCorrect = numToArr(trainLabels[i]);
