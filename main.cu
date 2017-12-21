@@ -105,7 +105,7 @@ double* read_arrLabelsTest(char* filename, int &len,int* correct) {
         getline(infile,line);
         tempint = stoi(line);
         correct[i] = tempint;
-        //printf("tempint: %d\n",tempint);
+        printf("tempint: %d\n",correct[i]);
         for(int j = 0; j < 10;j++){
             if(tempint == j) {
                 x[i*10+j] = 1.0;
