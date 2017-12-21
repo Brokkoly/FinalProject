@@ -181,6 +181,7 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,double* 
         //free(hyCorrect);
         //hyCorrect = numToArr(trainLabels[i]);
         cudaMemcpy(dyCorrect,trainLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
+        trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
     }
     //free(hyCorrect);
     free(trainImageDouble);
