@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string>
 #include <fstream>
-#include <math>
+//#include <math>
 #define NUMY 10
 using std::ifstream;
 using std::string;
@@ -150,7 +150,7 @@ int main(int argc,char** argv){
     float offset = 1;
 
     trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
-    
+
 
 
 
