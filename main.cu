@@ -295,7 +295,7 @@ int main(int argc,char** argv){
     int len = std::stoi(argv[2]);
     double LR = atof(argv[3]);
     double alpha = atof(argv[4]);
-int numH = std::stoi(argv[5]);
+    int numH = std::stoi(argv[5]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
@@ -367,12 +367,23 @@ int numH = std::stoi(argv[5]);
     double* hWeights1 = generateRandomWeights(numX*numH);
     //printArr(hWeights1,numH,numX,"");
     double* dWeights1 = generateDeviceArray(numX*numH);
+    double* hdeltas1 = (double*)malloc(numX*numH*sizeof(double));
+    for(int i = 0; i < numX*numH;i++){
+        hdeltas1[i] = 0;
+    }
+    double* hdeltas2 = (double*)malloc(numH*numY*sizeof(double));
+    for(int i = 0; i < numY*numH;i++){
+        hdeltas2[i] = 0;
+    }
+
     cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
     double* hWeights2 = generateRandomWeights(numH*NUMY);
     double* dWeights2 = generateDeviceArray(numH*NUMY);
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
+    cudaMemcpy(ddeltas1,hdeltas1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
+    cudaMemcpy(ddeltas2,hdeltas2,numY*numH*sizeof(double),cudaMemcpyHostToDevice);
 //    double alpha = .1;
     double lrate = LR;
     int dinterSize = 1024;
@@ -389,7 +400,7 @@ int numH = std::stoi(argv[5]);
     int* dbestMatch;
 	cudaMalloc(&dbestMatch,testLen*sizeof(int));
     //double* dresults= 
-	double* dresults =     generateDeviceArray(testLen*NUMY);
+	double* dresults = generateDeviceArray(testLen*NUMY);
 
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
@@ -456,13 +467,13 @@ for(int i =0; i < 10;i++){
     cudaFree(ddeltas2);
     cudaFree(dWeights2);
     cudaFree(dWeights1);
-cudaFree(dresults);
-cudaFree(dbestMatch);
+    cudaFree(dresults);
+    cudaFree(dbestMatch);
     free(testLabels);
     free(testImage);
 	free(correct);
-free(results);
-free(bestMatch);
+    free(results);
+    free(bestMatch);
     free(trainLabels);
     free(trainImage);
     
