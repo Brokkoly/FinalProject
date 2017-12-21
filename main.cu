@@ -161,8 +161,8 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
     matrixReduction<<<numH,numY,numY*sizeof(double)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
-    printf("Deltas for W1: \n");
-    printArrFromDevice(ddeltas1,numH,numX);
+    //printf("Deltas for W1: \n");
+    //printArrFromDevice(ddeltas1,numH,numX,"W1 Deltas");
     //free(testOutput);
 }
 
