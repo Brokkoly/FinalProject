@@ -23,6 +23,26 @@ __global__ void applySigmoid(double* hiddenLayer){
     int index = threadIdx.x;
     hiddenLayer[index] = sigmoid(hiddenLayer[index]);
 }*/
+
+
+
+__global__ void bestChoiceKernel(double* results,double* bestIndices,int len){
+
+    int tindex = threadIdx.x+blockIdx.x*blockDim.x;
+
+    int rindex = tindex*10;
+    int max = 0;
+    int maxIndex = 0;
+    if(tindex<len){
+        for(int i = 0; i < 10;i++){
+            if(results[rindex+i]>max){
+                maxIndex = i;
+                max = results[rindex+i];
+            }
+        }
+    }
+}
+
 __global__ void backPropagationFirstKernel(double* inputLayer,double* outputLayer,double* outputLayerTrue,double* weights,double* deltas,double* dels,double alpha,double lrate){
     int tindex = threadIdx.x;
     int oindex = blockIdx.x;

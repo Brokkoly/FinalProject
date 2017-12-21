@@ -88,6 +88,39 @@ double* read_arrLabels(char* filename, int &len) {
     infile.close();
     return x;
 }
+
+double* read_arrLabelsTest(char* filename, int &len,int* correct) {
+    
+    ifstream infile(filename);
+    string line;
+    int temp;
+    getline(infile,line);
+    temp = stoi(line);
+    if(temp<len) len=temp;
+    int tempint = 0;
+    double *x = (double*) malloc(10*len * sizeof(double));
+    correct = (int*)malloc(len*sizeof(int));
+    for (int i = 0; i < len; i++) {
+        //fscanf(fp, "%f", &x[i]);
+        getline(infile,line);
+        tempint = stoi(line);
+        correct[i] = tempint;
+        //printf("tempint: %d\n",tempint);
+        for(int j = 0; j < 10;j++){
+            if(tempint == j) {
+                x[i*10+j] = 1.0;
+            }
+            else
+            {
+                x[i*10+j]=0.0;
+            }
+            //printf("x[%d*10+%d] = %lf",i,j,x[i*10+j]);
+        }
+        //printf("i = %d,x[i] = %d",i,x[i]);
+    }
+    infile.close();
+    return x;
+}
 unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     //FILE *fp = fopen(filename, "r");
     ifstream infile(filename);
@@ -178,7 +211,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
 void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epochs,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
     double* trainImageDouble = (double*) malloc(numX*sizeof(double));
-    double* trainLabelsInner = (double*) malloc(numX*sizeof(double));
+    double* trainLabelsInner = (double*) malloc(numY*sizeof(double));
     for(int q = 0; q < epochs;q++){
         for(int i = 0; i < len;i++){
             for(int j = 0; j < numX;j++){
@@ -199,10 +232,46 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epoc
     }
     //free(hyCorrect);
     free(trainImageDouble);
+    free(trainLabelsInner);
+}
+
+void testing(int len,double* testLabels,unsigned char* testImage,double* results,double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2int numX,int numH,int numY,double offset,int dinterSize){
+
+    double* testImageDouble = (double*) malloc(numX*sizeof(double));
+    double* testLabelsInner = (double*) malloc(numY*sizeof(double));
+    for(int i = 0; i < len;i++){
+        for(int j = 0; j < numX;j++){
+                testImageDouble[j] = (double)testImage[j+i*numX];
+            }
+        for(int j = 0; j < numY;j++){
+                testLabelsInner[j] = testLabels[j+i*numY];
+                //printf(" %lf ",trainLabelsInner[j]);
+            }
+            //printf("\n");
+        cudaMemcpy(dx,testImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
+            //free(hyCorrect);
+            //hyCorrect = numToArr(trainLabels[i]);
+        cudaMemcpy(dyCorrect,testLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
+        trainingInstance(dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+
+        cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
+        for(int j = 0;j < numY;j++){
+            results[j+i*numX] = testLabelsInner[j];
+        }
+    }
+    free(testImageDouble);
+    free(testLabelsInner);
 }
 
 
-
+void testingInstance(double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
+    matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
+    sigmoidKernel<<<1,numH>>>(dh);
+    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
+    matrixReductionToVector<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
+    sigmoidKernel<<<1,numY>>>(dy);
+}
 
 int main(int argc,char** argv){
 
@@ -215,7 +284,7 @@ int main(int argc,char** argv){
     int cols;
 
 
-
+    int* correct;
 
 
     
@@ -238,6 +307,8 @@ int main(int argc,char** argv){
     trainLabels = read_arrLabels("labelsTrain.txt",len);
     //trainLabels = (double*) malloc(2*sizeof(double));
     printf("Len: %d\n",len);
+
+
     /*
     for(int i = 0; i < len;i++){
         printf("trainLabels[%d]: \n",i);
@@ -249,7 +320,8 @@ int main(int argc,char** argv){
     }
     */
     
-    
+    testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
+    testLabels = read_arrLabelsTest("labelsTest.txt",testlen,correct);
     //int numX = 10;
 
     int numX = rows*cols;
@@ -285,9 +357,29 @@ int main(int argc,char** argv){
     int dinterSize = 1024;
     double offset = 1;
 
+    double* results = (double*)malloc(testLen*NUMY*sizeof(double));
+    double* bestMatch = (double*)malloc(testLen*sizeof(double));
+
 
     longTraining(len,trainLabels,trainImage,epochs,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
+    testing(testLen,testLabels,testImage,results,dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+
+    int numThreads = 1024;
+    int numBlocks = testLen/1024 + 1;
+    bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
+    int err = 0;
+    int correct = 0;
+    for(int i = 0; i < testLen;i++){
+        if(bestMatch[i]!=correct[i]){
+            err++;
+        }
+        else{
+            correct++;
+        }
+    }
+    printf("# correct: %d\n",correct);
+    printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
 
