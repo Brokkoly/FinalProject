@@ -11,6 +11,7 @@
 #include <random>
 //#include <math>
 #define NUMY 10
+#include <time.h>
 using std::ifstream;
 using std::string;
 using std::ofstream;
@@ -105,7 +106,7 @@ double* read_arrLabelsTest(char* filename, int &len,int* correct) {
         getline(infile,line);
         tempint = stoi(line);
         correct[i] = tempint;
-        printf("tempint: %d\n",correct[i]);
+        //printf("tempint: %d\n",correct[i]);
         for(int j = 0; j < 10;j++){
             if(tempint == j) {
                 x[i*10+j] = 1.0;
@@ -284,10 +285,10 @@ int main(int argc,char** argv){
 
     unsigned char* trainImage;
     double* trainLabels;
-    int len = 10000;
+    int len = 60000;
     int rows;
     int cols;
-
+	srand(time(NULL));
     unsigned char* testImage;
     double* testLabels;
     int* correct;
@@ -306,7 +307,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 10000;
+    len = 60000;
 
 
 
@@ -327,14 +328,25 @@ int main(int argc,char** argv){
     */
     int testLen = 10000;
     testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
-    testLabels = read_arrLabelsTest("labelsTest.txt",testLen,correct);
+    testLabels = read_arrLabels("labelsTest.txt",testLen);
+correct = (int*) malloc(testLen*sizeof(int));
+
+	for(int i = 0; i < testLen;i++){
+		for(int j =0 ; j < NUMY;j++){
+		if(testLabels[j+i*NUMY]>.9){
+		correct[i] = j;
+			break;
+			}	
+		}
+	}
     //int numX = 10;
     printf("TestLen: %d\n",testLen);
+	printf("Testing For correct: %d\n",correct[0]);
 
     int numX = rows*cols;
     int numY = NUMY;
-    int numH = 500;
-    int epochs = 1;
+    int numH = 50;
+    int epochs = 500;
 
 
     
@@ -378,12 +390,12 @@ int main(int argc,char** argv){
     int err = 0;
     int right = 0;
   // int temp = bestMatch[0];
-double temp2 = results[0];
+//double temp2 = results[0];
 //int temp = correct[0];
 //printf("%d\n",temp);
-printf("%lf\n",temp2);
+//printf("%lf\n",temp2);
 //printf("%d\n",correct[0]);
-/*
+
     for(int i = 0; i < testLen;i++){
         if(bestMatch[i]!=correct[i]){
             err++;
@@ -392,7 +404,7 @@ printf("%lf\n",temp2);
             right++;
         }
     }
-  */ 
+ 
     printf("# correct: %d\n",right);
     printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
