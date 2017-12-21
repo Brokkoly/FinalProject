@@ -208,7 +208,7 @@ int main(int argc,char** argv){
     int debugLine = 0;
     unsigned char* trainImage;
     double* trainLabels;
-    int len = 10;
+    int len = 1000;
     int rows;
     int cols;
 
@@ -229,7 +229,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 10;
+    len = 1000;
 
 
 
