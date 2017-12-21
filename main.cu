@@ -166,7 +166,7 @@ int main(int argc,char** argv){
 
     
     //printf("Got to debug # %d\n",++debugLine);
-    trainImage = (double* )malloc(10*sizeof(double));
+    trainImage = (unsigned char* )malloc(10*sizeof(unsigned char));
     //trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     //printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     // for(int i = 0; i < rows;i++){
