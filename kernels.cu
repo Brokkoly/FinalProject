@@ -90,7 +90,7 @@ __global__ void matrixReductionDestructive(float *g_data,int size,int biggerSize
         __syncthreads();
         if(s == 0) break;
     }
-    if(tindex==0) g_data[blockIdx.x] = sdata[0];
+    if(tindex==0) g_data[size*blockIdx.x] = sdata[0];
 }
 __global__ void matrixReduction(float *g_data,float* o_data,int size,int biggerSize)
 {
@@ -108,7 +108,7 @@ __global__ void matrixReduction(float *g_data,float* o_data,int size,int biggerS
         __syncthreads();
         if(s == 0) break;
     }
-    if(tindex==0) o_data[blockIdx.x] = sdata[0];
+    if(tindex==0) o_data[size*blockIdx.x] = sdata[0];
 
 }
 
