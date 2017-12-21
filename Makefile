@@ -8,7 +8,7 @@ ARCH   	:= -march=native
 # Language standard
 CCSTD	:= -std=c99
 CXXSTD	:= -std=c++11
-
+LIBS += -lm
 # Linker options
 LDOPT 	:= $(OPT)
 LDFLAGS := 
@@ -26,7 +26,7 @@ all : finalProject
 
 
 finalProject: main.cu kernels.cu
-	module load cuda;nvcc -o finalProject $(OPT) main.cu -ccbin $(BIN)
+	module load cuda;nvcc -o finalProject $(OPT) main.cu -ccbin $(BIN) $(LIBS)
 
 
 

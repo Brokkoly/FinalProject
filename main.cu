@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
-#include <math>
+#include <math.h>
 #include <random>
 //#include <math>
 #define NUMY 10
