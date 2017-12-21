@@ -185,16 +185,19 @@ int main(int argc,char** argv){
     // for(int i = 0; i < 10;i++){
     //     printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
     // }
+    
+    trainImageDouble = (double*)malloc(10*sizeof(double));
     for(int i = 0; i < 10;i++){
-        trainImage[i] = i;
+        trainImageDouble[i] = i;
     }
-
     int numX = 10;
     //int numX = rows*cols;
     int numY = NUMY;
     int numH = 2;
     double* dx = generateDeviceArray(rows*cols);
-    cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    //cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    cudaMemcpy(dx,trainImageDouble,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    free(trainImageDouble)
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
