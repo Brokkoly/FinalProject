@@ -252,7 +252,7 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
             //free(hyCorrect);
             //hyCorrect = numToArr(trainLabels[i]);
         cudaMemcpy(dyCorrect,testLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
-        trainingInstance(dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+        testingInstance(dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
         cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
         for(int j = 0;j < numY;j++){
@@ -320,7 +320,7 @@ int main(int argc,char** argv){
         
     }
     */
-    int testLen;
+    int testLen = 10000;
     testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
     testLabels = read_arrLabelsTest("labelsTest.txt",testlen,correct);
     //int numX = 10;
