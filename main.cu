@@ -32,7 +32,7 @@ double* generateDeviceArray(int size){
     return deviceArr;
 }
 
-double* generateRandomWeights(int size,int numInputs,double* scalar){
+double* generateRandomWeights(int size,int numInputs,double scalar){
     double* weightArr = (double*) malloc(size*sizeof(double));
     std::default_random_engine generator;
     std::uniform_real_distribution<double> distribution(-1*scalar,scalar);
