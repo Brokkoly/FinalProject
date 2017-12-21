@@ -72,9 +72,10 @@ double* read_arrLabels(char* filename, int &len) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
         tempint = stoi(line);
+        printf("tempint: %d\n",tempint);
         for(int j = 0; j < 10;j++){
-            if(tempint ==i)x[i] =1;
-            else x[i]=0;
+            if(tempint ==i ) x[i] = 1.0;
+            else x[i]=0.0;
         }
         //printf("i = %d,x[i] = %d",i,x[i]);
     }
