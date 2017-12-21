@@ -263,7 +263,7 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
             //free(hyCorrect);
             //hyCorrect = numToArr(trainLabels[i]);
         //cudaMemcpy(dyCorrect,testLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
-        testingInstance(dx,dh,dy,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+        testingInstance(dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
         cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
         for(int j = 0;j < numY;j++){
@@ -275,14 +275,7 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
 }
 
 
-void testingInstance(double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
-    matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
-    sigmoidKernel<<<1,numH>>>(dh);
-    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
-    matrixReductionToVector<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
-    sigmoidKernel<<<1,numY>>>(dy);
-}
+
 
 int main(int argc,char** argv){
 
@@ -350,7 +343,7 @@ int main(int argc,char** argv){
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
-    double* hyCorrect = numToArr(trainLabels[0]);
+    double* hyCorrect = (double*)malloc(numY*sizeof(double));//numToArr(trainLabels[0]);
     //cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
