@@ -90,12 +90,13 @@ float* numToArr(char num){
 
 
 void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float* dWeights1,float* dWeights2,float* ddeltas1,float* ddeltas2,int numX,int numH,int numY,float offset,float alpha,float lrate,int dinterSize){
-
+    float* testOutput = (float*)malloc(10*sizeof(float));
     //firstLayer
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
     printf("First forward propagation done\n");
     matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,hibit(1024));
     printf("First reduction done\n");
+
     sigmoidKernel<<<1,numH>>>(dh);
     printf("First sigmoid done\n");
     //first layer done
@@ -105,9 +106,16 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
     printf("second forward propagation done\n");
     matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,hibit(1024));
     printf("second reduction done\n");
-
+    cudaMemcpy(testOutput,dy,10*sizeof(float),cudaMemcpyDeviceToHost);
+    for(int i = 0; i < 10;i++){
+        printf("%d: %f",i,testOutput[i]);
+    }
     sigmoidKernel<<<1,numY>>>(dy);
     printf("second sigmoid done\n");
+    cudaMemcpy(testOutput,dy,10*sizeof(float),cudaMemcpyDeviceToHost);
+    for(int i = 0; i < 10;i++){
+        printf("%d: %f",i,testOutput[i]);
+    }
     //second layer done
 
     //backpropagation:
@@ -118,6 +126,7 @@ void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* dde
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
     matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
+    free(testOutput);
 }
 
 int main(int argc,char** argv){
@@ -187,6 +196,20 @@ int main(int argc,char** argv){
 
 
 
+    free(hyCorrect);
+    free(hWeights2);
+    free(hWeights1);
+    cudaFree(dx);
+    cudaFree(dh);
+    cudaFree(dy);
+    cudaFree(dyCorrect);
+    cudaFree(ddels);
+    cudaFree(dgammas);
+    cudaFree(dinter);
+    cudaFree(ddeltas1);
+    cudaFree(ddeltas2);
+    cudaFree(dWeights2);
+    cudaFree(dWeights1);
 
 
     free(trainLabels);
