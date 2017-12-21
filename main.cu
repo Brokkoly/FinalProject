@@ -21,21 +21,21 @@ unsigned char* read_array(const char* filename, int len) {
     int temp;
     fscanf(fp,"%d",&temp);
     if(temp<len)len=temp;
-    float *x = (float*) malloc(len * sizeof(float));
+    char *x = (char*) malloc(len * sizeof(char));
     for (int i = 0; i < len; i++) {
         fscanf(fp, "%f", &x[i]);
     }
     fclose(fp);
     return x;
 }
-unsigned char* read_array(const char* filename, int* len,int* rows,int* cols) {
+unsigned char* read_array(const char* filename, int len,int rows,int cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
     if(temp<len) len=temp;
     fscanf(fp,"%d",&rows);
     fscanf(fp,"%d",&cols);
-    float *x = (float*) malloc(len * sizeof(char));
+    char *x = (char*) malloc(len * sizeof(char));
     for (int i = 0; i < len*rows*cols; i++) {
         fscanf(fp, "%f", &x[i]);
     }
