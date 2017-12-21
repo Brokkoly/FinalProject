@@ -209,12 +209,14 @@ int main(int argc,char** argv){
     //trainImage = (unsigned char* )malloc(10*sizeof(unsigned char));
     trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
+    /*
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
             printf("%d ",trainImage[i*cols+j]);
         }
         printf("\n");
     }
+    */
     len = 1;
 
 
@@ -222,8 +224,13 @@ int main(int argc,char** argv){
     trainLabels = read_arrLabels("labelsTrain.txt",len);
     //trainLabels = (double*) malloc(2*sizeof(double));
     printf("Len: %d\n",len);
-    for(int i = 0; i < 10;i++){
-        printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
+    for(int i = 0; i < len;i++){
+        printf("trainLabels[%d]: \n",i);
+        for(int j = 0; j < NUMY;j++){
+            printf(" %lf ",trainLabels[i*NUMY+j]);
+        }
+        printf("\n");
+        
     }
     
     
