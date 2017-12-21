@@ -285,7 +285,7 @@ int main(int argc,char** argv){
 
     unsigned char* trainImage;
     double* trainLabels;
-    int len = 60000;
+    int len = 10000;
     int rows;
     int cols;
 	srand(time(NULL));
@@ -307,7 +307,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 60000;
+    len = 10000;
 
 
 
@@ -370,10 +370,10 @@ int main(int argc,char** argv){
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
-    double alpha = 0;
+    double alpha = .1;
     double lrate = .01;
     int dinterSize = 1024;
-    double offset = 1;
+    double offset = .1;
 
     double* results =(double*) malloc(testLen*NUMY*sizeof(double));
     int* bestMatch = (int*)malloc(testLen*sizeof(int));
@@ -402,8 +402,11 @@ cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
 //printf("%lf\n",temp2);
 //printf("%d\n",correct[0]);
 
-for(int i =0; i < NUMY;i++){
-	printf(" %f ",results[i]);
+for(int i =0; i < 10;i++){
+for(int j = 0; j < NUMY;j++){
+	printf(" %f ",results[j+NUMY*i]);
+}
+printf("\n");
 }
 
     for(int i = 0; i < testLen;i++){
