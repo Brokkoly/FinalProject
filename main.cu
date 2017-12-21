@@ -39,8 +39,8 @@ double* generateRandomWeights(int size){
     return weightArr;
 }
 
-void printArr(double* arr,int rows,int cols){
-    printf("PRINTING NEW ARRAY!\n");
+void printArr(double* arr,int rows,int cols,std::string s){
+    printf("%s\n",s);
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
             printf(" %lf ", arr[i*cols+j] );
@@ -49,10 +49,10 @@ void printArr(double* arr,int rows,int cols){
     }
 }
 
-void printArrFromDevice(double* darr,int rows,int cols){
+void printArrFromDevice(double* darr,int rows,int cols,std::string s){
     double* harr = (double*) malloc(rows*cols*sizeof(double));
     cudaMemcpy(harr,darr,rows*cols*sizeof(double),cudaMemcpyDeviceToHost);
-    printArr(harr,rows,cols);
+    printArr(harr,rows,cols,s);
     free(harr);
 }
 
@@ -140,11 +140,12 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     //backpropagation:
     
     // printf("dyCorrect then dy\n");
-    // printArrFromDevice(dyCorrect,1,numY);
+    printArrFromDevice(dy,1,numY,"OutputY:")
+    printArrFromDevice(dyCorrect,1,numY,"CorrectY");
     //printArrFromDevice(dy,1,numY);
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
-    printf("Deltas for W2: \n");
-    printArrFromDevice(ddeltas2,numY,numH);
+    //printf("Deltas for W2: \n");
+    //printArrFromDevice(ddeltas2,numY,numH);
     //dim3 grid(numY,numH);
     //printf("Dels: \n");
     //printArrFromDevice(ddels,1,numY);
@@ -158,6 +159,18 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     printf("Deltas for W1: \n");
     printArrFromDevice(ddeltas1,numH,numX);
     //free(testOutput);
+}
+
+
+void longTraining(int len,double* trainLabels,double* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+    for(int i = 0; i < len;i++){
+        cudaMemcpy(dx,trainImage[i*numX],numX*sizeof(double));
+        free(hyCorrect);
+        hyCorrect = numToArr(trainLabels[i]);
+        cudaMemcpy(dyCorrect,hyCorrect,numY*sizeof(double));
+    }
+    //free(hyCorrect);
+
 }
 
 
@@ -201,13 +214,14 @@ int main(int argc,char** argv){
     
     
     //int numX = 10;
+
     int numX = rows*cols;
     int numY = NUMY;
-    double* trainImageDouble = (double*)malloc(numX*sizeof(double));
-    for(int i = 0; i < numX;i++){
-        trainImageDouble[i] = i;
-    }
     int numH = 500;
+
+
+
+    
     double* dx = generateDeviceArray(numX);
     cudaMemcpy(dx,trainImage,numX*sizeof(double),cudaMemcpyHostToDevice);
     //cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
@@ -216,7 +230,7 @@ int main(int argc,char** argv){
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
     double* hyCorrect = numToArr(trainLabels[0]);
-    cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
+    //cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
     double* dinter = generateDeviceArray(1024*1024);
@@ -234,7 +248,10 @@ int main(int argc,char** argv){
     int dinterSize = 1024;
     double offset = 1;
 
-    trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
+
+    longTraining(len,trainLabels,trainImage,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
+
+    //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
 
 
