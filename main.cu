@@ -74,12 +74,12 @@ double* read_arrLabels(char* filename, int &len) {
         tempint = stoi(line);
         printf("tempint: %d\n",tempint);
         for(int j = 0; j < 10;j++){
-            if(tempint ==i ) {
+            if(tempint == j) {
                 x[i*10+j] = 1.0;
             }
             else
             {
-             x[i]=0.0;
+                x[i*10+j]=0.0;
             }
             printf("x[%d*10+%d] = %lf",i,j,x[i*10+j]);
         }
