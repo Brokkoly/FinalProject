@@ -371,8 +371,8 @@ correct = (int*) malloc(testLen*sizeof(int));
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
-    double alpha = .1;
-    double lrate = .1;
+    double alpha = 0;
+    double lrate = .01;
     int dinterSize = 1024;
     double offset = 1;
 
@@ -396,7 +396,10 @@ correct = (int*) malloc(testLen*sizeof(int));
 //printf("%lf\n",temp2);
 //printf("%d\n",correct[0]);
 
+
+
     for(int i = 0; i < testLen;i++){
+
         if(bestMatch[i]!=correct[i]){
             err++;
         }
@@ -404,7 +407,7 @@ correct = (int*) malloc(testLen*sizeof(int));
             right++;
         }
     }
- 
+    
     printf("# correct: %d\n",right);
     printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
