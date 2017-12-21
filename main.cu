@@ -292,7 +292,7 @@ int main(int argc,char** argv){
     unsigned char* testImage;
     double* testLabels;
     int* correct;
-
+    int* epochs = stoi(argv[1]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
@@ -346,7 +346,7 @@ correct = (int*) malloc(testLen*sizeof(int));
     int numX = rows*cols;
     int numY = NUMY;
     int numH = 50;
-    int epochs = 500;
+    //int epochs = 500;
 
 
     
@@ -399,7 +399,7 @@ correct = (int*) malloc(testLen*sizeof(int));
 
 
     for(int i = 0; i < testLen;i++){
-
+        printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
         if(bestMatch[i]!=correct[i]){
             err++;
         }
