@@ -15,7 +15,7 @@ int hibit(unsigned int n) {
 }
 
 
-unsigned char* read_array(const char* filename, int* len) {
+unsigned char* read_array(char* filename, int* len) {
     
     FILE *fp = fopen(filename, "r");
     int temp;
@@ -28,7 +28,7 @@ unsigned char* read_array(const char* filename, int* len) {
     fclose(fp);
     return x;
 }
-unsigned char* read_array(const char* filename, int* len,int* rows,int* cols) {
+unsigned char* read_array(char* filename, int* len,int* rows,int* cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
