@@ -166,9 +166,9 @@ int main(int argc,char** argv){
 
     
     //printf("Got to debug # %d\n",++debugLine);
-    
-    trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
-    printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
+    trainImage = (double* )malloc(10*sizeof(double));
+    //trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
+    //printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     // for(int i = 0; i < rows;i++){
     //     for(int j = 0; j < cols;j++){
     //         printf("%d ",trainImage[i*cols+j]);
@@ -179,14 +179,18 @@ int main(int argc,char** argv){
 
 
 
-    trainLabels = read_arrLabels("labelsTrain.txt",len);
+    //trainLabels = read_arrLabels("labelsTrain.txt",len);
+    //trainLabels = (double*) malloc(2*sizeof(double));
     printf("Len: %d\n",len);
     // for(int i = 0; i < 10;i++){
     //     printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
     // }
+    for(int i = 0; i < 10;i++){
+        trainImage[i] = i;
+    }
 
-
-    int numX = rows*cols;
+    int numX = 10;
+    //int numX = rows*cols;
     int numY = NUMY;
     int numH = 2;
     double* dx = generateDeviceArray(rows*cols);
@@ -194,7 +198,10 @@ int main(int argc,char** argv){
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
-    double* hyCorrect = numToArr(trainLabels[0]);
+    double* hyCorrect = (double*) malloc(2*sizeof(double));
+    hyCorrect[0] = 0;
+    hyCorrect[5] = 5;
+    //double* hyCorrect = numToArr(trainLabels[0]);
     cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
