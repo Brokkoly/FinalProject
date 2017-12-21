@@ -197,7 +197,7 @@ int main(int argc,char** argv){
     int numH = 2;
     double* dx = generateDeviceArray(rows*cols);
     //cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
-    cudaMemcpy(dx,trainImageDouble,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
     free(trainImageDouble);
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
@@ -217,7 +217,7 @@ int main(int argc,char** argv){
     double* hWeights2 = generateRandomWeights(numH*NUMY);
     double* dWeights2 = generateDeviceArray(numH*NUMY);
     cudaMemcpy(dWeights2,hWeights2,numH*NUMY*sizeof(double),cudaMemcpyHostToDevice);
-    double* ddeltas1 = generateDeviceArray(rows*cols*numH);
+    double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
     double alpha = .1;
     double lrate = .1;
