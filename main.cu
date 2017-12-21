@@ -211,7 +211,7 @@ int main(int argc,char** argv){
     double* dyCorrect = generateDeviceArray(NUMY);
     double* hyCorrect = (double*) malloc(2*sizeof(double));
     hyCorrect[0] = 0;
-    hyCorrect[5] = 5;
+    hyCorrect[1] = 5;
     //double* hyCorrect = numToArr(trainLabels[0]);
     cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
