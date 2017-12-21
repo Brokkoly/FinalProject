@@ -187,7 +187,7 @@ int main(int argc,char** argv){
     //     printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
     // }
     
-    trainImageDouble = (double*)malloc(10*sizeof(double));
+    double* trainImageDouble = (double*)malloc(10*sizeof(double));
     for(int i = 0; i < 10;i++){
         trainImageDouble[i] = i;
     }
@@ -198,7 +198,7 @@ int main(int argc,char** argv){
     double* dx = generateDeviceArray(rows*cols);
     //cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
     cudaMemcpy(dx,trainImageDouble,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
-    free(trainImageDouble)
+    free(trainImageDouble);
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
