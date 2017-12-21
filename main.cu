@@ -146,6 +146,8 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     printf("Deltas for W2: \n");
     printArrFromDevice(ddeltas2,numY,numH);
     //dim3 grid(numY,numH);
+    printf("Dels: \n");
+    printArrFromDevice(ddels,1,numY);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
     printf("dgammas\n");
 
