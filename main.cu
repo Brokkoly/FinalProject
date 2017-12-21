@@ -17,7 +17,7 @@ int hibit(unsigned int n) {
 }
 
 
-unsigned char* read_arrLabels(std::string filename, int &len) {
+unsigned char* read_arrLabels(char* filename, int &len) {
     
     FILE *fp = fopen(filename, "r");
     int temp;
@@ -30,7 +30,7 @@ unsigned char* read_arrLabels(std::string filename, int &len) {
     fclose(fp);
     return x;
 }
-unsigned char* read_arrImage(std::string filename, int &len,int &rows,int &cols) {
+unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
@@ -57,7 +57,7 @@ int main(int argc,char** argv){
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
-            printf("%d",trainImage[icols+j]);
+            printf("%d",trainImage[i*cols+j]);
         }
     }
     len = 10;
