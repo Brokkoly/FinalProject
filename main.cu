@@ -53,7 +53,7 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
         //fscanf(fp, "%f", &x[i]);
         infile>>x[i];
     }
-    fclose(fp);
+    infile.close();
     return x;
 }
 
