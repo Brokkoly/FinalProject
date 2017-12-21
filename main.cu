@@ -292,6 +292,12 @@ int main(int argc,char** argv){
     char* testImage;
     double* testLabels;
     int* correct;
+
+    if(argc!=6){
+        printf("%s requires 5 additional variables:\nNum Epocs\nNumber of Training Samples\nLearning rate (float/double)\nInertia (float/double)\nNumber of nodes in the hidden layer\n",argc[1]);
+        return 0;
+    }
+
     int epochs = std::stoi(argv[1]);
     int len = std::stoi(argv[2]);
     double LR = atof(argv[3]);
