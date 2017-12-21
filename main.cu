@@ -5,7 +5,12 @@
 #include "kernels.cu"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string>
+#include <fstream>
+
+using std::ifstream;
+using std::string;
+using std::ofstream;
 
 int hibit(unsigned int n) {
     n |= (n >>  1);
@@ -19,28 +24,34 @@ int hibit(unsigned int n) {
 
 unsigned char* read_arrLabels(char* filename, int &len) {
     
-    FILE *fp = fopen(filename, "r");
+    ifstream infile(filename);
     int temp;
-    fscanf(fp,"%d",&temp);
+    infile>>temp;
     if(temp<len) len=temp;
     unsigned char *x = (unsigned char*) malloc(len * sizeof(char));
     for (int i = 0; i < len; i++) {
-        fscanf(fp, "%f", &x[i]);
+        //fscanf(fp, "%f", &x[i]);
+        infile>>x[i];
         printf("i = %d,x[i] = %d",i,x[i]);
     }
-    fclose(fp);
+    infile.close();
     return x;
 }
 unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
-    FILE *fp = fopen(filename, "r");
+    //FILE *fp = fopen(filename, "r");
+    ifstream infile(filename);
     int temp;
-    fscanf(fp,"%d",&temp);
+    infile>>temp;
+    //fscanf(fp,"%d",&temp);
     if(temp<len) len=temp;
-    fscanf(fp,"%d",&rows);
-    fscanf(fp,"%d",&cols);
+    infile>>rows;
+    infile>>cols;
+    //fscanf(fp,"%d",&rows);
+    //fscanf(fp,"%d",&cols);
     unsigned char *x = (unsigned char*) malloc(len*(rows)*(cols) * sizeof(char));
     for (int i = 0; i < len*(rows)*(cols); i++) {
-        fscanf(fp, "%f", &x[i]);
+        //fscanf(fp, "%f", &x[i]);
+        infile>>x[i];
     }
     fclose(fp);
     return x;
