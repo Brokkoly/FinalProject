@@ -63,7 +63,7 @@ int main(int argc,char** argv){
         for(int j = 0; j < cols;j++){
             printf("%d ",trainImage[i*cols+j]);
         }
-        printf("\n")
+        printf("\n");
     }
     len = 10;
     printf("Got to debug # %d\n",++debugLine);
