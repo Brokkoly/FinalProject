@@ -391,7 +391,7 @@ int main(int argc,char** argv){
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
 cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
-    bestChoiceKernel<<<numBlocks,numThreads>>>(dresults,dbestMatch,testLen);
+    bestChoiceKernel<<<numBlocks,numThreads>>>(dresults,dbestMatch,testLen,NUMY);
    cudaMemcpy(bestMatch,dbestMatch,sizeof(int)*testLen,cudaMemcpyDeviceToHost);
     int err = 0;
     int right = 0;
