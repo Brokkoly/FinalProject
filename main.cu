@@ -56,7 +56,7 @@ void printArrFromDevice(double* darr,int rows,int cols,std::string s){
     free(harr);
 }
 
-unsigned char* read_arrLabels(char* filename, int &len) {
+double* read_arrLabels(char* filename, int &len) {
     
     ifstream infile(filename);
     string line;
@@ -64,11 +64,16 @@ unsigned char* read_arrLabels(char* filename, int &len) {
     getline(infile,line);
     temp = stoi(line);
     if(temp<len) len=temp;
-    unsigned char *x = (unsigned char*) malloc(len * sizeof(char));
+    int tempint = 0;
+    unsigned char *x = (unsigned char*) malloc(10*len * sizeof(char));
     for (int i = 0; i < len; i++) {
         //fscanf(fp, "%f", &x[i]);
         getline(infile,line);
-        x[i] = stoi(line);
+        tempint = stoi(line);
+        for(int j = 0; j < 10;j++){
+            if(tempint ==i)x[i] =1;
+            else x[i]=0;
+        }
         //printf("i = %d,x[i] = %d",i,x[i]);
     }
     infile.close();
@@ -162,15 +167,19 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 }
 
 
-void longTraining(int len,double* trainLabels,double* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+void longTraining(int len,double* trainLabels,char* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+    double* trainImageDouble = (double*) malloc(numX*sizeof(double));
     for(int i = 0; i < len;i++){
-        cudaMemcpy(dx,trainImage[i*numX],numX*sizeof(double));
-        free(hyCorrect);
-        hyCorrect = numToArr(trainLabels[i]);
-        cudaMemcpy(dyCorrect,hyCorrect,numY*sizeof(double));
+        for(int j = 0; j < numX,j++){
+            trainImageDouble[j] = (double)trainImage[j+i*numX];
+        }
+        cudaMemcpy(dx,trainImageDouble,numX*sizeof(double));
+        //free(hyCorrect);
+        //hyCorrect = numToArr(trainLabels[i]);
+        cudaMemcpy(dyCorrect,trainLabels[i*numX],numY*sizeof(double));
     }
     //free(hyCorrect);
-
+    free(trainImageDouble);
 }
 
 
@@ -235,7 +244,7 @@ int main(int argc,char** argv){
     double* dgammas = generateDeviceArray(numH*NUMY);
     double* dinter = generateDeviceArray(1024*1024);
     double* hWeights1 = generateRandomWeights(numX*numH);
-    printArr(hWeights1,numH,numX);
+    //printArr(hWeights1,numH,numX,"");
     double* dWeights1 = generateDeviceArray(numX*numH);
     cudaMemcpy(dWeights1,hWeights1,numX*numH*sizeof(double),cudaMemcpyHostToDevice);
     double* hWeights2 = generateRandomWeights(numH*NUMY);
