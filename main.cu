@@ -41,9 +41,9 @@ double* generateRandomWeights(int size){
 
 void printArr(double* arr,int rows,int cols){
     printf("PRINTING NEW ARRAY!\n");
-    for(int i = 0; i < rows;i++){
-        for(int j = 0; j < cols;j++){
-            printf(" %lf ", arr[i*cols+j] );
+    for(int i = 0; i < cols;i++){
+        for(int j = 0; j < rows;j++){
+            printf(" %lf ", arr[i*rows+j] );
         }
         printf("\n");
     }
