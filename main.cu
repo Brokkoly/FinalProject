@@ -285,7 +285,7 @@ int main(int argc,char** argv){
 
     char* trainImage;
     double* trainLabels;
-    int len = 10000;
+    //int len = 10000;
     int rows;
     int cols;
 	srand(time(NULL));
@@ -293,6 +293,9 @@ int main(int argc,char** argv){
     double* testLabels;
     int* correct;
     int epochs = std::stoi(argv[1]);
+    int len = std::stoi(argv[1]);
+    double LR = atof(argv[3]);
+
 
     
     //printf("Got to debug # %d\n",++debugLine);
@@ -401,9 +404,11 @@ cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
 //printf("%d\n",temp);
 //printf("%lf\n",temp2);
 //printf("%d\n",correct[0]);
-int tempMax = 0;
-int maxIndex = 0;
+//int tempMax = 0;
+//int maxIndex = 0;
+/*
 for(int i =0; i < 10;i++){
+    
     tempMax =0;
     maxIndex = 0;
     for(int j = 0; j < NUMY;j++){
@@ -411,17 +416,14 @@ for(int i =0; i < 10;i++){
             tempMax = results[j+numY*i];
             maxIndex = j;
         }
-	   printf(" %f ",results[j+NUMY*i]);
+        	   printf(" %f ",results[j+NUMY*i]);
     }
     printf("MAXINDEX: %d\n",maxIndex);
     printf("\n");
 }
+*/
 
     for(int i = 0; i < testLen;i++){
-        if(i<10){
-            printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
-	
-        }
         if(bestMatch[i]!=correct[i]){
             err++;
         }
@@ -429,7 +431,10 @@ for(int i =0; i < 10;i++){
             right++;
         }
     }
-  
+    printf("# training data: %d\n",len);
+    printf("# hidden layers: %d\n",numH);
+    printf("Learning Rate: %lf\n",lrate);
+    printf("Alpha: %lf\n",alpha);
     printf("# correct: %d\n",right);
     printf("# wrong: %d\n",err);
     //trainingInstance(dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
