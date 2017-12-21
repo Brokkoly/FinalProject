@@ -162,7 +162,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     //double* testOutput = (double*)malloc(10*sizeof(double));
     //firstLayer
     // printArrFromDevice(dx,1,numX);
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
     // printf("dinter\n");
     // printArrFromDevice(dinter,2,1024);
     // printArrFromDevice(dWeights1,numH,numX);
@@ -241,7 +241,7 @@ void longTraining(int len,double* trainLabels,char* trainImage,int epochs,double
 }
 
 void testingInstance(double* dx,double* dh, double* dy,double* dinter,double* dWeights1,double* dWeights2,int numX,int numH,int numY,double offset,int dinterSize){
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
     matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
     sigmoidKernel<<<1,numH>>>(dh);
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
@@ -387,7 +387,7 @@ int main(int argc,char** argv){
 //    double alpha = .1;
     double lrate = LR;
     int dinterSize = 1024;
-    double offset = .1;
+    double offset = 1;
 
     double* results =(double*) malloc(testLen*NUMY*sizeof(double));
     int* bestMatch = (int*)malloc(testLen*sizeof(int));

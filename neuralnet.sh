@@ -9,8 +9,8 @@
 cd $SLURM_SUBMIT_DIR
 #for i in {1 10 100 1000} ;
 #do 
-./finalProject 100 60000 .2 .1 500
+./finalProject 10 30000 10 .5 50
 #done
-mv job_out fp.out
-mv job_err fp.err
+mv job_out fpoffset.out
+mv job_err fpoffset.err
 
