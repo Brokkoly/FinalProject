@@ -329,7 +329,7 @@ int main(int argc,char** argv){
     int testLen = 10000;
     testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
     testLabels = read_arrLabels("labelsTest.txt",testLen);
-correct = (int*) malloc(testLen*sizeof(int));
+    correct = (int*) malloc(testLen*sizeof(int));
 
 	for(int i = 0; i < testLen;i++){
 		for(int j =0 ; j < NUMY;j++){
@@ -375,7 +375,7 @@ correct = (int*) malloc(testLen*sizeof(int));
     int dinterSize = 1024;
     double offset = 1;
 
-    double* results = (double*)malloc(testLen*NUMY*sizeof(double));
+    double* results = generateDeviceArray(testLen*NUMY);
     int* bestMatch = (int*)malloc(testLen*sizeof(int));
 
 
@@ -383,11 +383,15 @@ correct = (int*) malloc(testLen*sizeof(int));
 
     testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 	
-int* dbestMatch;
-	cudaMalloc(
+    int* dbestMatch;
+    cudaMalloc(&dbestMatch,testLen*sizeof(int));
+    //double* dresults= 
+    
+
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
     bestChoiceKernel<<<numBlocks,numThreads>>>(results,bestMatch,testLen);
+    cudaMemcpy(bestMatch,dbestMatch,sizeof(int)*testLen,cudaMemcpyDeviceToHost);
     int err = 0;
     int right = 0;
   // int temp = bestMatch[0];
