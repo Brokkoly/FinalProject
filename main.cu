@@ -392,7 +392,7 @@ int main(int argc,char** argv){
     int numBlocks = testLen/1024 + 1;
 cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
     bestChoiceKernel<<<numBlocks,numThreads>>>(dresults,dbestMatch,testLen,NUMY);
-   cudaMemcpy(bestMatch,dbestMatch,sizeof(int)*testLen,cudaMemcpyDeviceToHost);
+   cudaMemcpy(bestMatch,dbestMatch,testLen*sizeof(int),cudaMemcpyDeviceToHost);
     int err = 0;
     int right = 0;
   // int temp = bestMatch[0];
@@ -401,11 +401,19 @@ cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
 //printf("%d\n",temp);
 //printf("%lf\n",temp2);
 //printf("%d\n",correct[0]);
-
+int tempMax = 0;
+int maxIndex = 0;
 for(int i =0; i < 10;i++){
+    tempMax =0;
+    maxIndex = 0;
     for(int j = 0; j < NUMY;j++){
+        if(results[j+numY*i]>tempMax){
+            tempMax = results[j+numY*i];
+            maxIndex = j;
+        }
 	   printf(" %f ",results[j+NUMY*i]);
     }
+    printf("MAXINDEX: %d\n",maxIndex);
     printf("\n");
 }
 
