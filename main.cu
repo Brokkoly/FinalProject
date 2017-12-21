@@ -292,15 +292,15 @@ int main(int argc,char** argv){
     double* testLabels;
     int* correct;
     int epochs = std::stoi(argv[1]);
-    int len = std::stoi(argv[1]);
+    int len = std::stoi(argv[2]);
     double LR = atof(argv[3]);
-
+    double alpha = atof(argv[4]);
 
     
     //printf("Got to debug # %d\n",++debugLine);
     //trainImage = (char* )malloc(10*sizeof(char));
     trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
-    printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
+    //printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     /*
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
@@ -315,7 +315,7 @@ int main(int argc,char** argv){
 
     trainLabels = read_arrLabels("labelsTrain.txt",len);
     //trainLabels = (double*) malloc(2*sizeof(double));
-    printf("Len: %d\n",len);
+    //printf("Len: %d\n",len);
 
 
     /*
@@ -342,8 +342,8 @@ int main(int argc,char** argv){
 		}
 	}
     //int numX = 10;
-    printf("TestLen: %d\n",testLen);
-	printf("Testing For correct: %d\n",correct[0]);
+    //printf("TestLen: %d\n",testLen);
+	//printf("Testing For correct: %d\n",correct[0]);
 
     int numX = rows*cols;
     int numY = NUMY;
@@ -373,7 +373,7 @@ int main(int argc,char** argv){
     double* ddeltas1 = generateDeviceArray(numX*numH);
     double* ddeltas2 = generateDeviceArray(numH*NUMY);
     double alpha = .1;
-    double lrate = .01;
+    double lrate = LR;
     int dinterSize = 1024;
     double offset = .1;
 
