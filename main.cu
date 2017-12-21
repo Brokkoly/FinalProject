@@ -403,17 +403,17 @@ cudaMemcpy(dresults,results,sizeof(double)*testLen*NUMY,cudaMemcpyHostToDevice);
 //printf("%d\n",correct[0]);
 
 for(int i =0; i < 10;i++){
-for(int j = 0; j < NUMY;j++){
-	printf(" %f ",results[j+NUMY*i]);
-}
-printf("\n");
+    for(int j = 0; j < NUMY;j++){
+	   printf(" %f ",results[j+NUMY*i]);
+    }
+    printf("\n");
 }
 
     for(int i = 0; i < testLen;i++){
-if(i<10){
+    if(i<10){
        printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
 	
-}
+    }
         if(bestMatch[i]!=correct[i]){
             err++;
         }
