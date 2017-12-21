@@ -55,21 +55,22 @@ int main(int argc,char** argv){
     int len = 1;
     int rows;
     int cols;
-    printf("Got to debug # %d",++debugLine);
+    printf("Got to debug # %d\n",++debugLine);
     trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
-    printf("Got to debug # %d",++debugLine);
+    printf("Got to debug # %d\n",++debugLine);
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
-            printf("%d",trainImage[i*cols+j]);
+            printf("%d ",trainImage[i*cols+j]);
         }
+        printf("\n")
     }
     len = 10;
-    printf("Got to debug # %d",++debugLine);
+    printf("Got to debug # %d\n",++debugLine);
     trainLabels = read_arrLabels("labelsTrain.txt",len);
-    printf("Len:\n",len,rows,cols);
+    printf("Len: %d\n",len);
     for(int i = 0; i < 10;i++){
-        printf("trainLabels[%d]: %d",i,trainLabels[i]);
+        printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
     }
     free(trainLabels);
     free(trainImage);
