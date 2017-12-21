@@ -410,10 +410,10 @@ for(int i =0; i < 10;i++){
 }
 
     for(int i = 0; i < testLen;i++){
-    if(i<10){
-       printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
+        if(i<10){
+            printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
 	
-    }
+        }
         if(bestMatch[i]!=correct[i]){
             err++;
         }
