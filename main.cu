@@ -109,7 +109,7 @@ double* numToArr(char num){
 
 
 void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
-    double* testOutput = (double*)malloc(10*sizeof(double));
+    //double* testOutput = (double*)malloc(10*sizeof(double));
     //firstLayer
     printArrFromDevice(dx,1,numX);
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
@@ -141,11 +141,15 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     
 
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
+    printf("Deltas for W2: \n");
+    printArrFromDevice(ddeltas2,numH,numY);
     //dim3 grid(numY,numH);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
     matrixReduction<<<numH,numY,numY*sizeof(double)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
-    free(testOutput);
+    printf("Deltas for W1: \n");
+    printArrFromDevice(ddeltas1,numH,numY);
+    //free(testOutput);
 }
 
 int main(int argc,char** argv){
