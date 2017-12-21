@@ -346,7 +346,7 @@ correct = (int*) malloc(testLen*sizeof(int));
     int numX = rows*cols;
     int numY = NUMY;
     int numH = 50;
-    int epochs = 500;
+    int epochs = 10;
 
 
     
