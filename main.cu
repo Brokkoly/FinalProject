@@ -212,6 +212,8 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
 
 void longTraining(int len,double* trainLabels,unsigned char* trainImage,int epochs,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
+
+
     double* trainImageDouble = (double*) malloc(numX*sizeof(double));
     double* trainLabelsInner = (double*) malloc(numY*sizeof(double));
     for(int q = 0; q < epochs;q++){
@@ -265,9 +267,9 @@ void testing(int len,double* testLabels,unsigned char* testImage,double* results
         //cudaMemcpy(dyCorrect,testLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
         testingInstance(dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
-        cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
+        //cudaMemcpy(testLabelsInner,dy,numY*sizeof(double),cudaMemcpyDeviceToHost);
         for(int j = 0;j < numY;j++){
-            results[j+i*numX] = testLabelsInner[j];
+            //results[j+i*numX] = testLabelsInner[j];
         }
     }
     free(testImageDouble);
@@ -327,11 +329,12 @@ int main(int argc,char** argv){
     testImage = read_arrImage("imagesTest.txt",testLen,rows,cols);
     testLabels = read_arrLabelsTest("labelsTest.txt",testLen,correct);
     //int numX = 10;
+    printF("TestLen: %d\n",testLen);
 
     int numX = rows*cols;
     int numY = NUMY;
     int numH = 500;
-    int epochs = 10;
+    int epochs = 1;
 
 
     
