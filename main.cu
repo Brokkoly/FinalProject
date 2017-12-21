@@ -35,7 +35,7 @@ unsigned char* read_array(const char* filename, int* len,int* rows,int* cols) {
     if(temp<*len) *len=temp;
     fscanf(fp,"%d",rows);
     fscanf(fp,"%d",cols);
-    unsigned char *x = (unsigned char*) malloc(*len * sizeof(char));
+    unsigned char *x = (unsigned char*) malloc(*len*(*rows)*(*cols) * sizeof(char));
     for (int i = 0; i < *len*(*rows)*(*cols); i++) {
         fscanf(fp, "%f", &x[i]);
     }
@@ -46,8 +46,26 @@ unsigned char* read_array(const char* filename, int* len,int* rows,int* cols) {
 
 int main(int argc,char** argv){
 
-
-
+    unsigned char* trainImage;
+    unsigned char* trainLabels;
+    int len = 1;
+    int rows;
+    int cols;
+    trainImage = read_array("imagesTrain.txt",len,rows,cols);
+    printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
+    for(int i = 0; i < rows;i++){
+        for(int j = 0; j < cols;j++){
+            printf("%d",trainImage[i*cols+j]);
+        }
+    }
+    len = 10;
+    trainLabels = read_array("labelsTrain.txt",len);
+    printf("Len:\n",len,rows,cols);
+    for(int i = 0; i < 10;i++){
+        printf("trainLabels[%d]: %d",i,trainLabels[i]);
+    }
+    free(trainLabels);
+    fere(trainImage);
 
     //Initialize weight matrices
 
@@ -55,7 +73,7 @@ int main(int argc,char** argv){
     //get inputs from test file
 
     //todo: add main
-    float* a = (float*) malloc(2*13*sizeof(float));
+    /*float* a = (float*) malloc(2*13*sizeof(float));
     float* b = (float*) malloc(2);
     for(int i = 0; i < 13;i++){
         a[i] = i;
@@ -77,6 +95,7 @@ int main(int argc,char** argv){
     cudaFree(da);
     free(a);
     free(b);
+    */
 }
 
 
