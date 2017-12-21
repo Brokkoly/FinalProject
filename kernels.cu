@@ -35,8 +35,8 @@ __global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int nu
     //for(int i = 0; i < numY;i++){
     //    sum += results[rindex+i];
     //}
-    int max = 0;
-    int maxIndex = 0;
+    int max = -100;
+    int maxIndex = -1;
     if(tindex<len){
         for(int i = 0; i < numY;i++){
             if((results[rindex+i])>max){
@@ -44,8 +44,9 @@ __global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int nu
                 max = results[rindex+i];
             }
         }
+        bestIndices[tindex] = maxIndex;
     }
-    bestIndices[tindex] = maxIndex;
+    
 }
 
 __global__ void backPropagationFirstKernel(double* inputLayer,double* outputLayer,double* outputLayerTrue,double* weights,double* deltas,double* dels,double alpha,double lrate){
