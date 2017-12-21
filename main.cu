@@ -145,8 +145,8 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     //backpropagation:
     
     // printf("dyCorrect then dy\n");
-    printArrFromDevice(dy,1,numY,"OutputY:");
-    printArrFromDevice(dyCorrect,1,numY,"CorrectY");
+    printArrFromDevice(dy,1,numY,"OutputY: ");
+    printArrFromDevice(dyCorrect,1,numY,"CorrectY ");
     //printArrFromDevice(dy,1,numY);
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     //printf("Deltas for W2: \n");
@@ -196,7 +196,7 @@ int main(int argc,char** argv){
     int debugLine = 0;
     unsigned char* trainImage;
     double* trainLabels;
-    int len = 1;
+    int len = 10;
     int rows;
     int cols;
 
@@ -217,7 +217,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 1;
+    len = 10;
 
 
 
