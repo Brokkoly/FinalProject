@@ -41,7 +41,7 @@ double* generateRandomWeights(int size){
 }
 
 void printArr(double* arr,int rows,int cols,std::string s){
-    std::cout<<s<<endl;
+    std::cout<<s<<std::endl;
     //printf("\n");
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
