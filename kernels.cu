@@ -45,6 +45,7 @@ __global__ void bestChoiceKernel(double* results,int* bestIndices,int len,int nu
             }
         }
     }
+    bestIndices[tindex] = maxIndex;
 }
 
 __global__ void backPropagationFirstKernel(double* inputLayer,double* outputLayer,double* outputLayerTrue,double* weights,double* deltas,double* dels,double alpha,double lrate){
