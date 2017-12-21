@@ -367,7 +367,7 @@ int main(int argc,char** argv){
 
     longTraining(len,trainLabels,trainImage,epochs,dx,dh,dy,dyCorrect,ddels,dgammas,dinter,dWeights1,dWeights2,ddeltas1,ddeltas2,numX,numH,numY,offset,alpha,lrate,dinterSize);
 
-    testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
+    //testing(testLen,testLabels,testImage,results,dx,dh,dy,dinter,dWeights1,dWeights2,numX,numH,numY,offset,dinterSize);
 
     int numThreads = 1024;
     int numBlocks = testLen/1024 + 1;
