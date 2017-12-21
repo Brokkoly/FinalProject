@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1 # not needed for OpenMP
 cd $SLURM_SUBMIT_DIR
-./finalProject 1
+./finalProject 100
 mv job_out fp.out
 mv job_err fp.err
 

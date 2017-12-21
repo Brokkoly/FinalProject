@@ -285,7 +285,7 @@ int main(int argc,char** argv){
 
     char* trainImage;
     double* trainLabels;
-    int len = 10000;
+    int len = 60000;
     int rows;
     int cols;
 	srand(time(NULL));
@@ -307,7 +307,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 10000;
+    len = 60000;
 
 
 
