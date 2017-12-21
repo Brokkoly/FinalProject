@@ -25,13 +25,15 @@ int hibit(unsigned int n) {
 float* generateDeviceArray(int size){
     float* deviceArr;
     cudaMalloc(deviceArr,size*sizeof(float));
+    return deviceArr;
 }
 
 float* generateRandomWeights(int size){
     float* weightArr = (float*) malloc(size*sizeof(float));
     for(int i = 0; i < size;i++){
-        weightArr[i] = .1
+        weightArr[i] = .1;
     }
+    return weightArr;
 }
 
 
@@ -84,6 +86,38 @@ unsigned char* numToArr(char num){
         if(i==num)x[i]=1;
         else x[i]=0;
     }
+}
+
+
+void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float* dWeights1,float* dWeights2,float* ddeltas1,float* ddeltas2,int numX,int numH,int numY,float offset,float alpha,float lrate,int dinterSize){
+
+    //firstLayer
+    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
+    printf("First forward propagation done\n");
+    matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,hibit(1024));
+    printf("First reduction done\n");
+    sigmoidKernel<<<1,numH>>>(dh);
+    printf("First sigmoid done\n");
+    //first layer done
+
+    //second layer:
+    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
+    printf("second forward propagation done\n");
+    matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,hibit(1024));
+    printf("second reduction done\n");
+
+    sigmoidKernel<<<1,numY>>>(dy);
+    printf("second sigmoid done\n");
+    //second layer done
+
+    //backpropagation:
+    
+
+    backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
+    //dim3 grid(numY,numH);
+    backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
+    matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas,numY,hibit(numY));
+    backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
 }
 
 int main(int argc,char** argv){
@@ -191,39 +225,4 @@ int main(int argc,char** argv){
 }
 
 
-void trainingInstance(float* dx,float* dh, float* dy,float* dyCorrect,float* ddels,float* dgammas,float* dinter,float* dWeights1,float* dWeights2,float* ddeltas1,float* ddeltas2,int numX,int numH,int numY,float offset,float alpha,float lrate,int dinterSize){
 
-    //firstLayer
-    forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,offset);
-    printf("First forward propagation done\n");
-    matrixReduction<<<numH,numX,numX*sizeof(float)>>>(dinter,dh,1024,hibit(1024));
-    printf("First reduction done\n");
-    sigmoidKernel<<<1,numH>>>(dh);
-    printf("First sigmoid done\n");
-    //first layer done
-
-    //second layer:
-    forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
-    printf("second forward propagation done\n");
-    matrixReduction<<<numY,numH,numH*sizeof(float)>>>(dinter,dy,1024,hibit(1024));
-    printf("second reduction done\n");
-
-    sigmoidKernel<<<1,numY>>>(dy);
-    printf("second sigmoid done\n");
-    //second layer done
-
-    //backpropagation:
-    
-
-    backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
-    //dim3 grid(numY,numH);
-    backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
-    matrixReduction<<<numH,numY,numY*sizeof(float)>>>(dgammas,dgammas,numY,hibit(numY));
-    backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
-
-
-
-
-
-
-}
