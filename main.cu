@@ -209,15 +209,12 @@ int main(int argc,char** argv){
     }
     int numH = 500;
     double* dx = generateDeviceArray(numX);
-    cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    cudaMemcpy(dx,trainImage,numX*sizeof(double),cudaMemcpyHostToDevice);
     //cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
     //free(trainImageDouble);
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
-    double* hyCorrect = (double*) malloc(2*sizeof(double));
-    //hyCorrect[0] = 0;
-    //hyCorrect[1] = 5;
     double* hyCorrect = numToArr(trainLabels[0]);
     cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
