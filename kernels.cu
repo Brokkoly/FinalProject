@@ -28,6 +28,7 @@ __global__ void backPropagationFirstKernel(double* inputLayer,double* outputLaye
     int oindex = blockIdx.x;
     int windex = tindex+blockIdx.x*blockDim.x;
     double del = (outputLayer[oindex]-outputLayerTrue[oindex])*outputLayer[oindex]*(1-outputLayer[oindex]);
+    dels[oindex] = del;
     deltas[windex] = (1-alpha)*lrate*del*inputLayer[tindex]+alpha*deltas[windex];
     weights[windex] = weights[windex]-deltas[windex];
 }
