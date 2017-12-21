@@ -283,7 +283,7 @@ int main(int argc,char** argv){
     int debugLine = 0;
     unsigned char* trainImage;
     double* trainLabels;
-    int len = 60000;
+    int len = 10000;
     int rows;
     int cols;
 
@@ -305,7 +305,7 @@ int main(int argc,char** argv){
         printf("\n");
     }
     */
-    len = 60000;
+    len = 10000;
 
 
 
@@ -332,7 +332,7 @@ int main(int argc,char** argv){
     int numX = rows*cols;
     int numY = NUMY;
     int numH = 500;
-    int epochs = 100;
+    int epochs = 10;
 
 
     
