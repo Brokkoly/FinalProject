@@ -51,7 +51,7 @@ void printArr(double* arr,int rows,int cols){
 
 void printArrFromDevice(double* darr,int rows,int cols){
     double* harr = (double*) malloc(rows*cols*sizeof(double));
-    cudaMemcpy(harr,darr,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy(harr,darr,rows*cols*sizeof(double),cudaMemcpyDeviceToHost);
     printArr(harr,rows,cols);
     free(harr);
 }
