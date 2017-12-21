@@ -40,7 +40,8 @@ double* generateRandomWeights(int size){
 }
 
 void printArr(double* arr,int rows,int cols,std::string s){
-    printf("%s\n",s);
+    printf(s);
+    printf("\n");
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
             printf(" %lf ", arr[i*cols+j] );
@@ -176,7 +177,10 @@ void longTraining(int len,double* trainLabels,unsigned char* trainImage,double* 
         }
         for(int j = 0; j < numY;j++){
             trainLabelsInner[j] = trainLabels[j+i*numY];
+            printf(" %lf ",trainLabelsInner[j]);
+
         }
+        printf("\n");
         cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
         //free(hyCorrect);
         //hyCorrect = numToArr(trainLabels[i]);
