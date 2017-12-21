@@ -17,28 +17,28 @@ int hibit(unsigned int n) {
 }
 
 
-unsigned char* read_arrLabels(std::string filename, int* len) {
+unsigned char* read_arrLabels(std::string filename, int &len) {
     
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
-    if(temp<*len) *len=temp;
-    unsigned char *x = (unsigned char*) malloc(*len * sizeof(char));
-    for (int i = 0; i < *len; i++) {
+    if(temp<len) len=temp;
+    unsigned char *x = (unsigned char*) malloc(len * sizeof(char));
+    for (int i = 0; i < len; i++) {
         fscanf(fp, "%f", &x[i]);
     }
     fclose(fp);
     return x;
 }
-unsigned char* read_arrImage(std::string filename, int* len,int* rows,int* cols) {
+unsigned char* read_arrImage(std::string filename, int &len,int &rows,int &cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
-    if(temp<*len) *len=temp;
+    if(temp<len) len=temp;
     fscanf(fp,"%d",rows);
     fscanf(fp,"%d",cols);
-    unsigned char *x = (unsigned char*) malloc(*len*(*rows)*(*cols) * sizeof(char));
-    for (int i = 0; i < *len*(*rows)*(*cols); i++) {
+    unsigned char *x = (unsigned char*) malloc(len*(rows)*(cols) * sizeof(char));
+    for (int i = 0; i < len*(rows)*(cols); i++) {
         fscanf(fp, "%f", &x[i]);
     }
     fclose(fp);
@@ -57,7 +57,7 @@ int main(int argc,char** argv){
     printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
     for(int i = 0; i < rows;i++){
         for(int j = 0; j < cols;j++){
-            printf("%d",trainImage[i*cols+j]);
+            printf("%d",trainImage[icols+j]);
         }
     }
     len = 10;
