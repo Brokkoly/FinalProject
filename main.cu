@@ -407,7 +407,7 @@ for(int i =0; i < NUMY;i++){
 }
 
     for(int i = 0; i < testLen;i++){
-if(i%1000==0){
+if(i%1001==0){
        printf("best: %d\ncorrect: %d\n",bestMatch[i],correct[i]);
 	
 }
