@@ -9,7 +9,7 @@
 #include <fstream>
 #include <random>
 //#include <math>
-#define NUMY 2
+#define NUMY 10
 using std::ifstream;
 using std::string;
 using std::ofstream;
@@ -111,47 +111,47 @@ double* numToArr(char num){
 void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
     //double* testOutput = (double*)malloc(10*sizeof(double));
     //firstLayer
-    printArrFromDevice(dx,1,numX);
+    // printArrFromDevice(dx,1,numX);
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
-    printf("dinter\n");
-    printArrFromDevice(dinter,2,1024);
-    printArrFromDevice(dWeights1,numH,numX);
-    printf("First forward propagation done\n");
+    // printf("dinter\n");
+    // printArrFromDevice(dinter,2,1024);
+    // printArrFromDevice(dWeights1,numH,numX);
+    // printf("First forward propagation done\n");
     matrixReductionToVector<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
-    printArrFromDevice(dh,1,numH);
-    printf("First reduction done\n");
+    // printArrFromDevice(dh,1,numH);
+    // printf("First reduction done\n");
 
     sigmoidKernel<<<1,numH>>>(dh);
-    printf("First sigmoid done\n");
+    // printf("First sigmoid done\n");
     //first layer done
-    printArrFromDevice(dh,1,numH);
+    // printArrFromDevice(dh,1,numH);
     //second layer:
     forwardPropagation<<<numY,numH>>>(dh,dinter,dWeights2,dinterSize,offset);
-    printf("second forward propagation done\n");
-    printArrFromDevice(dWeights2,numY,numH);
+    // printf("second forward propagation done\n");
+    // printArrFromDevice(dWeights2,numY,numH);
     matrixReductionToVector<<<numY,numH,numH*sizeof(double)>>>(dinter,dy,1024,hibit(1024));
-    printf("second reduction done\n");
-    printArrFromDevice(dy,1,numY);
+    // printf("second reduction done\n");
+    // printArrFromDevice(dy,1,numY);
     sigmoidKernel<<<1,numY>>>(dy);
-    printArrFromDevice(dy,1,numY);
-    printf("second sigmoid done\n");
+    // printArrFromDevice(dy,1,numY);
+    // printf("second sigmoid done\n");
     //second layer done
 
     //backpropagation:
     
-    printf("dyCorrect then dy\n");
-    printArrFromDevice(dyCorrect,1,numY);
-    printArrFromDevice(dy,1,numY);
+    // printf("dyCorrect then dy\n");
+    // printArrFromDevice(dyCorrect,1,numY);
+    //printArrFromDevice(dy,1,numY);
     backPropagationFirstKernel<<<numY,numH>>>(dh,dy,dyCorrect,dWeights2,ddeltas2,ddels,alpha,lrate);
     printf("Deltas for W2: \n");
     printArrFromDevice(ddeltas2,numY,numH);
     //dim3 grid(numY,numH);
-    printf("Dels: \n");
-    printArrFromDevice(ddels,1,numY);
+    //printf("Dels: \n");
+    //printArrFromDevice(ddels,1,numY);
     backPropagationSecondKernelPart1<<<numY,numH>>>(dh,dgammas,dWeights1,ddels,alpha,lrate);
-    printf("dgammas\n");
+    //printf("dgammas\n");
 
-    printArrFromDevice(dgammas,numH,numY);
+    //printArrFromDevice(dgammas,numH,numY);
 
     matrixReduction<<<numH,numY,numY*sizeof(double)>>>(dgammas,dgammas,numY,hibit(numY));
     backPropagationSecondKernelPart2<<<numH,numX>>>(dx,dgammas,dWeights1,ddeltas1,alpha,lrate);
@@ -159,6 +159,9 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     printArrFromDevice(ddeltas1,numH,numX);
     //free(testOutput);
 }
+
+
+
 
 int main(int argc,char** argv){
 
@@ -176,15 +179,15 @@ int main(int argc,char** argv){
 
     
     //printf("Got to debug # %d\n",++debugLine);
-    trainImage = (unsigned char* )malloc(10*sizeof(unsigned char));
-    //trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
-    //printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
-    // for(int i = 0; i < rows;i++){
-    //     for(int j = 0; j < cols;j++){
-    //         printf("%d ",trainImage[i*cols+j]);
-    //     }
-    //     printf("\n");
-    // }
+    //trainImage = (unsigned char* )malloc(10*sizeof(unsigned char));
+    trainImage = read_arrImage("imagesTrain.txt",len,rows,cols);
+    printf("Len: %d\nRows: %d\nCols: %d\n",len,rows,cols);
+    for(int i = 0; i < rows;i++){
+        for(int j = 0; j < cols;j++){
+            printf("%d ",trainImage[i*cols+j]);
+        }
+        printf("\n");
+    }
     len = 1;
 
 
@@ -192,29 +195,30 @@ int main(int argc,char** argv){
     trainLabels = read_arrLabels("labelsTrain.txt",len);
     //trainLabels = (double*) malloc(2*sizeof(double));
     printf("Len: %d\n",len);
-    // for(int i = 0; i < 10;i++){
-    //     printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
-    // }
-    
-    double* trainImageDouble = (double*)malloc(10*sizeof(double));
     for(int i = 0; i < 10;i++){
+        printf("trainLabels[%d]: %d\n",i,trainLabels[i]);
+    }
+    
+    
+    //int numX = 10;
+    int numX = rows*cols;
+    int numY = NUMY;
+    double* trainImageDouble = (double*)malloc(numX*sizeof(double));
+    for(int i = 0; i < numX;i++){
         trainImageDouble[i] = i;
     }
-    int numX = 10;
-    //int numX = rows*cols;
-    int numY = NUMY;
-    int numH = 2;
+    int numH = 500;
     double* dx = generateDeviceArray(numX);
-    //cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
-    cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
-    free(trainImageDouble);
+    cudaMemcpy(dx,trainImage,rows*cols*sizeof(double),cudaMemcpyHostToDevice);
+    //cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
+    //free(trainImageDouble);
     double* dh = generateDeviceArray(numH);
     double* dy = generateDeviceArray(NUMY);
     double* dyCorrect = generateDeviceArray(NUMY);
     double* hyCorrect = (double*) malloc(2*sizeof(double));
-    hyCorrect[0] = 0;
-    hyCorrect[1] = 5;
-    //double* hyCorrect = numToArr(trainLabels[0]);
+    //hyCorrect[0] = 0;
+    //hyCorrect[1] = 5;
+    double* hyCorrect = numToArr(trainLabels[0]);
     cudaMemcpy(dyCorrect,hyCorrect,NUMY*sizeof(double),cudaMemcpyHostToDevice);
     double* ddels = generateDeviceArray(NUMY);
     double* dgammas = generateDeviceArray(numH*NUMY);
