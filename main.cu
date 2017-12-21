@@ -25,13 +25,16 @@ int hibit(unsigned int n) {
 unsigned char* read_arrLabels(char* filename, int &len) {
     
     ifstream infile(filename);
+    string line;
     int temp;
-    infile>>temp;
+    getline(infile,line);
+    temp = stoi(line);
     if(temp<len) len=temp;
     unsigned char *x = (unsigned char*) malloc(len * sizeof(char));
     for (int i = 0; i < len; i++) {
         //fscanf(fp, "%f", &x[i]);
-        infile>>x[i];
+        getline(infile,line);
+        x[i] = stoi(line);
         printf("i = %d,x[i] = %d",i,x[i]);
     }
     infile.close();
@@ -41,17 +44,22 @@ unsigned char* read_arrImage(char* filename, int &len,int &rows,int &cols) {
     //FILE *fp = fopen(filename, "r");
     ifstream infile(filename);
     int temp;
-    infile>>temp;
+    string line;
+    getline(infile,line);
+    temp = stoi(line);
     //fscanf(fp,"%d",&temp);
     if(temp<len) len=temp;
-    infile>>rows;
-    infile>>cols;
+    getline(infile,line);
+    rows = stoi(line);
+    getline(infile,line);
+    cols = stoi(line);
     //fscanf(fp,"%d",&rows);
     //fscanf(fp,"%d",&cols);
     unsigned char *x = (unsigned char*) malloc(len*(rows)*(cols) * sizeof(char));
     for (int i = 0; i < len*(rows)*(cols); i++) {
         //fscanf(fp, "%f", &x[i]);
-        infile>>x[i];
+        getline(infile,line);
+        x[i] = stoi(line);
     }
     infile.close();
     return x;
