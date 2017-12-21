@@ -113,6 +113,8 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     //firstLayer
     printArrFromDevice(dx,1,numX);
     forwardPropagation<<<numH,numX>>>(dx,dinter,dWeights1,dinterSize,0);
+    printf("dinter\n");
+    printArrFromDevice(dinter,2,1024);
     printArrFromDevice(dWeights1,numH,numX);
     printf("First forward propagation done\n");
     matrixReduction<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
