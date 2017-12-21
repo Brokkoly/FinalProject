@@ -49,7 +49,7 @@ void printArr(double* arr,int rows,int cols){
 }
 
 void printArrFromDevice(double* darr,int rows,int cols){
-    double* harr = (double*) malloc(rows*cols*sizeof(double))
+    double* harr = (double*) malloc(rows*cols*sizeof(double));
     cudaMemcpy(harr,darr,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
     printArr(harr,rows,cols);
     free(harr);
@@ -115,7 +115,7 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
     printArrFromDevice(dWeights1,numH,numX);
     printf("First forward propagation done\n");
     matrixReduction<<<numH,numX,numX*sizeof(double)>>>(dinter,dh,1024,hibit(1024));
-    printArrFromDevice(dH,1,numH);
+    printArrFromDevice(dh,1,numH);
     printf("First reduction done\n");
 
     sigmoidKernel<<<1,numH>>>(dh);
