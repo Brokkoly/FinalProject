@@ -169,14 +169,18 @@ void trainingInstance(double* dx,double* dh, double* dy,double* dyCorrect,double
 
 void longTraining(int len,double* trainLabels,unsigned char* trainImage,double* dx,double* dh, double* dy,double* dyCorrect,double* ddels,double* dgammas,double* dinter,double* dWeights1,double* dWeights2,double* ddeltas1,double* ddeltas2,int numX,int numH,int numY,double offset,double alpha,double lrate,int dinterSize){
     double* trainImageDouble = (double*) malloc(numX*sizeof(double));
+    double* trainLabelsInner = (double*) malloc(numX*sizeof(double));
     for(int i = 0; i < len;i++){
         for(int j = 0; j < numX;j++){
             trainImageDouble[j] = (double)trainImage[j+i*numX];
         }
+        for(int j = 0; j < numY;j++){
+            trainLabelsInner[j] = trainLabels[j+i*numY];
+        }
         cudaMemcpy(dx,trainImageDouble,numX*sizeof(double),cudaMemcpyHostToDevice);
         //free(hyCorrect);
         //hyCorrect = numToArr(trainLabels[i]);
-        cudaMemcpy(dyCorrect,trainLabels[i*numX],numY*sizeof(double),cudaMemcpyHostToDevice);
+        cudaMemcpy(dyCorrect,trainLabelsInner,numY*sizeof(double),cudaMemcpyHostToDevice);
     }
     //free(hyCorrect);
     free(trainImageDouble);
