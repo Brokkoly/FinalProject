@@ -5,6 +5,8 @@
 #include "kernels.cu"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 int hibit(unsigned int n) {
     n |= (n >>  1);
     n |= (n >>  2);
@@ -15,7 +17,7 @@ int hibit(unsigned int n) {
 }
 
 
-unsigned char* read_array(char* filename, int* len) {
+unsigned char* read_array(string filename, int* len) {
     
     FILE *fp = fopen(filename, "r");
     int temp;
@@ -28,7 +30,7 @@ unsigned char* read_array(char* filename, int* len) {
     fclose(fp);
     return x;
 }
-unsigned char* read_array(char* filename, int* len,int* rows,int* cols) {
+unsigned char* read_array(string filename, int* len,int* rows,int* cols) {
     FILE *fp = fopen(filename, "r");
     int temp;
     fscanf(fp,"%d",&temp);
@@ -65,7 +67,7 @@ int main(int argc,char** argv){
         printf("trainLabels[%d]: %d",i,trainLabels[i]);
     }
     free(trainLabels);
-    fere(trainImage);
+    free(trainImage);
 
     //Initialize weight matrices
 
